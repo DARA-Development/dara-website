@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DARA+ — Vantage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FFFFFF;
+    --surface: #F6F7F8;
+    --surface-strong: #EEF0F2;
+    --ink: #10151C;
+    --ink-soft: #4C5561;
+    --ink-faint: #8993A0;
+    --line: #E1E4E8;
+    --brand: #0B3D91;
+    --brand-deep: #082D6C;
+    --accent: #D42F3F;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0E1218; --surface: #161C24; --surface-strong: #1D242E; --ink: #F1F3F5;
+      --ink-soft: #A9B1BC; --ink-faint: #6C7684; --line: #262E39; --brand: #5C9DFF; --brand-deep: #8FBBFF; --accent: #FF6B78;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0E1218; --surface: #161C24; --surface-strong: #1D242E; --ink: #F1F3F5;
+    --ink-soft: #A9B1BC; --ink-faint: #6C7684; --line: #262E39; --brand: #5C9DFF; --brand-deep: #8FBBFF; --accent: #FF6B78;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Manrope', sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1, h2, h3 { font-weight: 700; margin: 0; letter-spacing: -0.01em; }
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 40px; }
+
+  /* ---------- Top utility bar ---------- */
+  .utility {
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+    font-size: 12.5px;
+    color: var(--ink-faint);
+  }
+  .utility .wrap { display: flex; justify-content: flex-end; gap: 20px; padding: 7px 40px; }
+  .utility a:hover { color: var(--ink-soft); }
+
+  /* ---------- Main nav ---------- */
+  .masthead {
+    position: sticky; top: 0; z-index: 30;
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+  }
+  .masthead .wrap { display: flex; align-items: center; height: 72px; gap: 36px; }
+  .brand { display: flex; align-items: center; gap: 9px; margin-right: auto; }
+  .mark { width: 24px; height: 24px; }
+  .wordmark { font-weight: 800; font-size: 18px; }
+  .wordmark span { color: var(--accent); }
+
+  .primary-nav { display: flex; align-items: center; gap: 4px; height: 100%; }
+  .nav-item { position: relative; height: 100%; display: flex; align-items: center; }
+  .nav-link {
+    background: none; border: none; font-size: 14.5px; font-weight: 600; color: var(--ink);
+    padding: 0 16px; height: 100%; display: flex; align-items: center; gap: 5px;
+    border-bottom: 2px solid transparent;
+  }
+  .nav-link:hover, .nav-item.open .nav-link { border-bottom-color: var(--brand); color: var(--brand); }
+  .nav-link .chev { width: 9px; height: 9px; transition: transform 0.15s; }
+  .nav-item.open .nav-link .chev { transform: rotate(180deg); }
+
+  .dropdown {
+    position: absolute; top: 100%; left: 50%; transform: translateX(-50%);
+    width: 300px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px;
+    box-shadow: 0 12px 28px rgba(16,21,28,0.12);
+    padding: 10px; display: none; z-index: 40;
+  }
+  .nav-item.open .dropdown { display: block; }
+  .dropdown a { display: block; padding: 10px 12px; border-radius: 6px; font-size: 13.5px; color: var(--ink-soft); }
+  .dropdown a:hover { background: var(--surface); color: var(--ink); }
+  .dropdown a strong { display: block; font-size: 13.5px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+  .dropdown a span { font-size: 12px; color: var(--ink-faint); }
+
+  .nav-actions { display: flex; align-items: center; gap: 10px; }
+  .theme-toggle {
+    width: 34px; height: 34px; border: 1px solid var(--line); background: transparent; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center; color: var(--ink-soft);
+  }
+  .theme-toggle:hover { border-color: var(--ink-faint); color: var(--ink); }
+  .theme-toggle svg { width: 15px; height: 15px; }
+  .theme-toggle .icon-moon { display: none; }
+  :root[data-theme="dark"] .theme-toggle .icon-moon { display: block; }
+  :root[data-theme="dark"] .theme-toggle .icon-sun { display: none; }
+
+  .btn { padding: 10px 18px; border-radius: 6px; font-size: 13.5px; font-weight: 700; border: 1.5px solid var(--line); background: transparent; color: var(--ink); white-space: nowrap; }
+  .btn-brand { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .btn-brand:hover { background: var(--brand-deep); border-color: var(--brand-deep); }
+  .btn-outline:hover { border-color: var(--ink-faint); }
+
+  /* ---------- Hero ---------- */
+  .hero { background: linear-gradient(180deg, var(--surface), var(--bg) 70%); border-bottom: 1px solid var(--line); }
+  .hero .wrap { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px; align-items: center; padding-top: 72px; padding-bottom: 64px; }
+  .kicker { display: inline-flex; align-items: center; gap: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: var(--brand); background: var(--surface-strong); border: 1px solid var(--line); padding: 5px 12px; border-radius: 20px; margin-bottom: 22px; }
+  .hero h1 { font-size: 46px; line-height: 1.14; margin-bottom: 20px; letter-spacing: -0.02em; }
+  .hero .sub { font-size: 17px; color: var(--ink-soft); max-width: 46ch; margin-bottom: 30px; }
+  .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+  .hero-visual { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 28px; }
+
+  /* ---------- Stat strip ---------- */
+  .stat-strip { border-bottom: 1px solid var(--line); background: var(--bg); }
+  .stat-strip .wrap { display: grid; grid-template-columns: repeat(4, 1fr); padding: 30px 40px; }
+  .stat-cell { padding: 0 24px; border-left: 1px solid var(--line); }
+  .stat-cell:first-child { border-left: none; padding-left: 0; }
+  .stat-cell strong { display: block; font-size: 24px; font-weight: 800; margin-bottom: 4px; }
+  .stat-cell span { font-size: 13px; color: var(--ink-soft); }
+
+  /* ---------- Story sections ---------- */
+  .story { padding: 88px 0; border-bottom: 1px solid var(--line); }
+  .story .wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+  .story.reverse .wrap { direction: rtl; }
+  .story.reverse .wrap > * { direction: ltr; }
+  .story-copy h2 { font-size: 30px; margin-bottom: 16px; letter-spacing: -0.01em; }
+  .story-copy .lead { font-size: 15.5px; color: var(--ink-soft); margin-bottom: 26px; max-width: 48ch; }
+  .story-links { display: flex; flex-direction: column; gap: 4px; border-top: 1px solid var(--line); padding-top: 18px; }
+  .story-links a { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; font-size: 14px; font-weight: 600; border-bottom: 1px solid var(--line); }
+  .story-links a:last-child { border-bottom: none; }
+  .story-links a:hover { color: var(--brand); }
+  .story-links .arrow { color: var(--ink-faint); }
+
+  .story-visual { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 32px; }
+
+  /* ---------- Explore grid ---------- */
+  .explore { padding: 88px 0; background: var(--surface); border-bottom: 1px solid var(--line); }
+  .explore h2 { font-size: 28px; margin-bottom: 36px; }
+  .explore-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+  .explore-card { background: var(--bg); padding: 26px 22px; }
+  .explore-card .ic { width: 34px; height: 34px; border-radius: 8px; background: var(--surface-strong); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; color: var(--brand); }
+  .explore-card h3 { font-size: 15px; margin-bottom: 8px; }
+  .explore-card p { font-size: 13px; color: var(--ink-soft); margin: 0 0 14px; min-height: 52px; }
+  .explore-card .go { font-size: 13px; font-weight: 700; color: var(--brand); display: inline-flex; align-items: center; gap: 5px; }
+
+  /* ---------- Sector band ---------- */
+  .sectors { padding: 72px 0; }
+  .sectors h2 { font-size: 26px; margin-bottom: 8px; }
+  .sectors .sub { font-size: 15px; color: var(--ink-soft); margin-bottom: 36px; max-width: 60ch; }
+  .sector-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .sector-card { border: 1px solid var(--line); border-radius: 12px; padding: 24px; }
+  .sector-card .mono { font-size: 11.5px; color: var(--brand); display: block; margin-bottom: 10px; }
+  .sector-card h3 { font-size: 16px; margin-bottom: 8px; }
+  .sector-card p { font-size: 13.5px; color: var(--ink-soft); margin: 0; }
+
+  .founders { margin-top: 48px; padding-top: 40px; border-top: 1px solid var(--line); }
+  .founders h3.h { font-size: 20px; margin-bottom: 20px; }
+  .founder-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .founder-card { border: 1px solid var(--line); border-radius: 12px; padding: 22px; }
+  .founder-avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--surface-strong); color: var(--brand); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 15px; margin-bottom: 14px; }
+  .founder-card h4 { font-size: 15px; margin-bottom: 2px; }
+  .founder-role { font-size: 13px; color: var(--ink-soft); margin: 0 0 10px; }
+  .founder-card .li-link { font-size: 12.5px; font-weight: 700; color: var(--brand); }
+  .founder-card .li-link:hover { color: var(--brand-deep); }
+
+  /* ---------- CTA band ---------- */
+  .cta-band { background: var(--brand); color: #fff; padding: 56px 0; }
+  .cta-band .wrap { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+  .cta-band h2 { font-size: 24px; color: #fff; }
+  .cta-band p { font-size: 14.5px; color: rgba(255,255,255,0.8); margin: 6px 0 0; }
+  .cta-band .btn { background: #fff; color: var(--brand-deep); border-color: #fff; }
+  .cta-band .btn:hover { background: rgba(255,255,255,0.9); }
+
+  /* ---------- Footer ---------- */
+  .site-footer { padding: 64px 0 0; }
+  .footer-grid { display: grid; grid-template-columns: 1.4fr repeat(4, 1fr); gap: 32px; padding-bottom: 44px; border-bottom: 1px solid var(--line); }
+  .footer-brand-col .footer-brand { display: flex; align-items: center; gap: 9px; margin-bottom: 14px; }
+  .footer-brand-col .mark { width: 22px; height: 22px; }
+  .footer-brand-col .wordmark { font-weight: 800; font-size: 16px; }
+  .footer-brand-col p { font-size: 13px; color: var(--ink-soft); max-width: 30ch; margin: 0; }
+  .footer-col h4 { font-size: 12.5px; text-transform: uppercase; letter-spacing: 0.04em; color: var(--ink-faint); margin-bottom: 16px; font-weight: 700; }
+  .footer-col ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 11px; }
+  .footer-col button, .footer-col a { background: none; border: none; padding: 0; font-size: 13.5px; color: var(--ink-soft); font-family: inherit; text-align: left; }
+  .footer-col button:hover, .footer-col a:hover { color: var(--ink); }
+  .footer-bottom { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; padding: 22px 0; font-size: 12.5px; color: var(--ink-faint); }
+  .footer-bottom .legal-links { display: flex; gap: 18px; flex-wrap: wrap; }
+  .footer-bottom a { color: var(--ink-faint); }
+  .footer-bottom a:hover { color: var(--ink-soft); }
+
+  /* ---------- Modal ---------- */
+  dialog { border: none; border-radius: 10px; padding: 0; width: min(440px, 92vw); background: var(--bg); color: var(--ink); }
+  dialog::backdrop { background: rgba(10,14,20,0.55); }
+  .modal-inner { padding: 28px 28px 26px; position: relative; }
+  .modal-inner h2 { font-size: 19px; margin-bottom: 6px; }
+  .sub-modal { font-size: 13.5px; color: var(--ink-soft); margin-bottom: 22px; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 13px; color: var(--ink-soft); margin-bottom: 6px; }
+  .field input, .field textarea { width: 100%; border: 1px solid var(--line); background: var(--surface); color: var(--ink); border-radius: 6px; padding: 10px 12px; font-family: inherit; font-size: 14px; }
+  .field input:focus, .field textarea:focus { outline: none; border-color: var(--brand); }
+  .modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+  .modal-actions .btn { flex: 1; text-align: center; }
+  .modal-close { position: absolute; top: 18px; right: 18px; background: none; border: none; color: var(--ink-faint); font-size: 20px; }
+  .modal-success { display: none; text-align: center; padding: 12px 0 4px; }
+  .modal-success.active { display: block; }
+  .modal-success p { font-size: 14.5px; color: var(--ink-soft); margin: 6px 0 0; }
+
+  /* ---------- Mobile ---------- */
+  @media (max-width: 980px) {
+    .wrap { padding: 0 20px; }
+    .primary-nav { display: none; }
+    .masthead .wrap { flex-wrap: wrap; height: auto; padding: 14px 20px; gap: 10px; }
+    .brand { width: 100%; }
+    .nav-actions { width: 100%; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
+    .utility .wrap { padding: 6px 20px; }
+    .hero .wrap, .story .wrap { grid-template-columns: 1fr; gap: 32px; }
+    .story.reverse .wrap { direction: ltr; }
+    .hero h1 { font-size: 32px; }
+    .stat-strip .wrap { grid-template-columns: repeat(2, 1fr); gap: 20px 0; }
+    .stat-cell:nth-child(3) { border-left: none; padding-left: 0; }
+    .explore-grid { grid-template-columns: 1fr 1fr; }
+    .sector-grid { grid-template-columns: 1fr; }
+    .founder-grid { grid-template-columns: 1fr; }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="utility">
+  <div class="wrap">
+    <a href="#" data-static-link>Partners</a>
+    <a href="#" data-static-link>Contact</a>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 100 100" role="img" aria-label="DARA plus mark">
+        <line x1="50" y1="10" x2="14" y2="86" stroke="var(--ink)" stroke-width="9" stroke-linecap="round"/>
+        <line x1="50" y1="10" x2="86" y2="86" stroke="var(--ink)" stroke-width="9" stroke-linecap="round"/>
+        <line x1="18" y1="50" x2="82" y2="50" stroke="var(--ink)" stroke-width="9" stroke-linecap="round"/>
+        <circle cx="72" cy="50" r="5.5" fill="var(--accent)"/>
+      </svg>
+      <span class="wordmark">DARA<span>+</span></span>
+    </div>
+
+    <nav class="primary-nav">
+      <div class="nav-item"><a class="nav-link" href="#" data-scroll="home">Home</a></div>
+      <div class="nav-item" id="productsDD">
+        <button class="nav-link" data-dd-toggle>Products &amp; services
+          <svg class="chev" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 3l4 4 4-4"/></svg>
+        </button>
+        <div class="dropdown">
+          <a href="#" data-scroll="svc-field"><strong>Field validation</strong><span>Drone RF testing for MCx and rail</span></a>
+          <a href="#" data-scroll="svc-portal"><strong>Data portal</strong><span>Secure, compliant capture and storage</span></a>
+          <a href="#" data-scroll="svc-analysis"><strong>Analysis</strong><span>Tuning guidance from raw data</span></a>
+          <a href="#" data-scroll="svc-marketplace"><strong>rApp marketplace</strong><span>Open and closed loop, per use case</span></a>
+        </div>
+      </div>
+      <div class="nav-item"><a class="nav-link" href="#" data-scroll="about">About us</a></div>
+      <div class="nav-item"><a class="nav-link" href="#" data-scroll="investors">Investor relations</a></div>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>
+      </button>
+      <button class="btn btn-outline" data-modal="login">Portal login</button>
+      <button class="btn btn-outline" data-modal="partner">Become a partner</button>
+      <button class="btn btn-brand" data-modal="demo">Request a demo</button>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="hero" id="home">
+    <div class="wrap">
+      <div>
+        <span class="kicker">DARA+ platform</span>
+        <h1>Ground truth for networks that can't fail.</h1>
+        <p class="sub">Drone and satellite RF validation, a secure data portal, and an rApp marketplace — one loop that takes mission-critical and railway networks from measurement to tuned performance.</p>
+        <div class="hero-ctas">
+          <button class="btn btn-brand" data-modal="demo">Request a demo</button>
+          <button class="btn btn-outline" data-modal="partner">Become a partner</button>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <svg viewBox="0 0 480 300" width="100%" height="auto" role="img" aria-label="Signal coverage from a drone down to ground network nodes">
+          <line x1="0" y1="250" x2="480" y2="250" stroke="var(--line)" stroke-width="1"/>
+          <g stroke="var(--brand)" stroke-width="1.4" fill="none" opacity="0.65">
+            <path id="harc1" d="M 190 70 A 60 40 0 0 0 290 70"/>
+            <path id="harc2" d="M 150 70 A 100 68 0 0 0 330 70"/>
+            <path id="harc3" d="M 110 70 A 140 96 0 0 0 370 70"/>
+          </g>
+          <circle cx="240" cy="70" r="5" fill="var(--accent)"/>
+          <line x1="240" y1="70" x2="240" y2="42" stroke="var(--ink)" stroke-width="2"/>
+          <rect x="216" y="22" width="48" height="20" rx="3" fill="none" stroke="var(--ink)" stroke-width="2"/>
+          <g fill="var(--ink)">
+            <circle cx="150" cy="250" r="4"/>
+            <circle cx="210" cy="250" r="4"/>
+            <circle cx="270" cy="250" r="4"/>
+            <circle cx="330" cy="250" r="4"/>
+          </g>
+          <g class="mono" font-size="11" fill="var(--ink-faint)">
+            <text x="150" y="272" text-anchor="middle">rail</text>
+            <text x="330" y="272" text-anchor="middle">mcx</text>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="stat-strip">
+    <div class="wrap">
+      <div class="stat-cell"><strong>MCx + rail</strong><span>Zero tolerance for coverage gaps</span></div>
+      <div class="stat-cell"><strong>O-RAN</strong><span>Open, vendor-neutral interfaces</span></div>
+      <div class="stat-cell"><strong>Drone + satellite</strong><span>Terrestrial and non-terrestrial coverage</span></div>
+      <div class="stat-cell"><strong>Open + closed loop</strong><span>rApps matched to the use case</span></div>
+    </div>
+  </section>
+
+  <section class="story" id="svc-field">
+    <div class="wrap">
+      <div class="story-copy">
+        <h2>Validate, test and optimise MCx and railway networks</h2>
+        <p class="lead">Drone-mounted measurement — the Phoenix and Horus platforms — flies the routes and sites that matter for mission-critical communications and railway telecom, capturing RF conditions ground-based testing misses. The same flight programme extends to satellite-to-device coverage.</p>
+        <div class="story-links">
+          <a href="#" data-static-link><span>Phoenix drone platform</span><span class="arrow">&rarr;</span></a>
+          <a href="#" data-static-link><span>Horus measurement device</span><span class="arrow">&rarr;</span></a>
+          <a href="#" data-static-link><span>Satellite-to-device testing</span><span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+      <div class="story-visual">
+        <svg viewBox="0 0 400 260" width="100%" height="auto" role="img" aria-label="Drone flight path over a network site">
+          <rect x="20" y="200" width="360" height="2" fill="var(--line)"/>
+          <path d="M 40 190 L 120 80 L 200 190 L 280 80 L 360 190" fill="none" stroke="var(--brand)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="120" cy="80" r="5" fill="var(--accent)"/>
+          <circle cx="280" cy="80" r="5" fill="var(--accent)"/>
+          <g fill="var(--ink)"><circle cx="40" cy="190" r="3"/><circle cx="200" cy="190" r="3"/><circle cx="360" cy="190" r="3"/></g>
+          <rect x="185" y="205" width="30" height="18" fill="none" stroke="var(--ink)" stroke-width="1.5"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="story reverse" id="svc-portal">
+    <div class="wrap">
+      <div class="story-copy">
+        <h2>A secure home for everything collected</h2>
+        <p class="lead">Every capture lands in a portal built for regulatory compliance and data security from the ground up — encrypted in transit and at rest, access-controlled by role, and structured for audit from day one.</p>
+        <div class="story-links">
+          <a href="#" data-static-link><span>Encrypted storage</span><span class="arrow">&rarr;</span></a>
+          <a href="#" data-static-link><span>Role-based access</span><span class="arrow">&rarr;</span></a>
+          <a href="#" data-static-link><span>Audit-ready logging</span><span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+      <div class="story-visual">
+        <svg viewBox="0 0 400 260" width="100%" height="auto" role="img" aria-label="Secure data portal diagram">
+          <rect x="130" y="60" width="140" height="170" rx="10" fill="none" stroke="var(--brand)" stroke-width="2"/>
+          <rect x="155" y="40" width="90" height="40" rx="8" fill="none" stroke="var(--ink)" stroke-width="2"/>
+          <circle cx="200" cy="60" r="7" fill="none" stroke="var(--ink)" stroke-width="2"/>
+          <line x1="150" y1="110" x2="250" y2="110" stroke="var(--line)" stroke-width="1.5"/>
+          <line x1="150" y1="140" x2="250" y2="140" stroke="var(--line)" stroke-width="1.5"/>
+          <line x1="150" y1="170" x2="250" y2="170" stroke="var(--line)" stroke-width="1.5"/>
+          <circle cx="200" cy="200" r="4" fill="var(--accent)"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="story" id="svc-analysis">
+    <div class="wrap">
+      <div class="story-copy">
+        <h2>From raw capture to tuning guidance</h2>
+        <p class="lead">Collected data is analysed to produce concrete optimisation and tuning guidelines — not just a report of what's wrong, but a specific set of actions for network engineers to apply immediately.</p>
+        <div class="story-links">
+          <a href="#" data-static-link><span>AI-assisted analysis</span><span class="arrow">&rarr;</span></a>
+          <a href="#" data-static-link><span>Optimisation guidelines</span><span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+      <div class="story-visual">
+        <svg viewBox="0 0 400 260" width="100%" height="auto" role="img" aria-label="Analysis chart diagram">
+          <polyline points="40,190 100,150 160,170 220,100 280,120 340,60" fill="none" stroke="var(--brand)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <g fill="var(--accent)"><circle cx="40" cy="190" r="4"/><circle cx="160" cy="170" r="4"/><circle cx="340" cy="60" r="4"/></g>
+          <line x1="40" y1="220" x2="360" y2="220" stroke="var(--line)" stroke-width="1"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="story reverse" id="svc-marketplace">
+    <div class="wrap">
+      <div class="story-copy">
+        <h2>A catalog of rApps, open and closed loop</h2>
+        <p class="lead">Analysis becomes action through an rApp catalog built on the AI rApp Intent Studio platform — open-loop rApps for advisory tuning, closed-loop rApps that observe, analyse, decide and act automatically, matched to the use case.</p>
+        <div class="story-links">
+          <a href="#" data-static-link><span>Open-loop rApps</span><span class="arrow">&rarr;</span></a>
+          <a href="#" data-static-link><span>Closed-loop rApps</span><span class="arrow">&rarr;</span></a>
+          <a href="#" data-static-link><span>O-RAN alignment</span><span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+      <div class="story-visual">
+        <svg viewBox="0 0 400 260" width="100%" height="auto" role="img" aria-label="rApp marketplace grid diagram">
+          <g fill="none" stroke="var(--brand)" stroke-width="1.5">
+            <rect x="60" y="60" width="70" height="70" rx="8"/>
+            <rect x="165" y="60" width="70" height="70" rx="8"/>
+            <rect x="270" y="60" width="70" height="70" rx="8"/>
+            <rect x="60" y="150" width="70" height="70" rx="8"/>
+            <rect x="165" y="150" width="70" height="70" rx="8"/>
+            <rect x="270" y="150" width="70" height="70" rx="8"/>
+          </g>
+          <circle cx="95" cy="95" r="4" fill="var(--accent)"/>
+          <circle cx="305" cy="185" r="4" fill="var(--accent)"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="explore">
+    <div class="wrap">
+      <h2>Explore products and services</h2>
+      <div class="explore-grid">
+        <div class="explore-card">
+          <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v6M12 16v6M4.2 4.2l4.2 4.2M15.6 15.6l4.2 4.2M2 12h6M16 12h6M4.2 19.8l4.2-4.2M15.6 8.4l4.2-4.2"/></svg></div>
+          <h3>Field validation</h3>
+          <p>Drone-based RF testing for MCx and railway networks.</p>
+          <a class="go" href="#" data-scroll="svc-field">Explore &rarr;</a>
+        </div>
+        <div class="explore-card">
+          <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 10h16M10 4v16"/></svg></div>
+          <h3>Data portal</h3>
+          <p>Encrypted, access-controlled, audit-ready.</p>
+          <a class="go" href="#" data-scroll="svc-portal">Explore &rarr;</a>
+        </div>
+        <div class="explore-card">
+          <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 17l6-6 4 4 8-8"/></svg></div>
+          <h3>Analysis</h3>
+          <p>Concrete tuning guidance from raw data.</p>
+          <a class="go" href="#" data-scroll="svc-analysis">Explore &rarr;</a>
+        </div>
+        <div class="explore-card">
+          <div class="ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></div>
+          <h3>rApp marketplace</h3>
+          <p>Open and closed loop, O-RAN aligned.</p>
+          <a class="go" href="#" data-scroll="svc-marketplace">Explore &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sectors" id="about">
+    <div class="wrap">
+      <h2>Built by people who've stood next to the mast</h2>
+      <p class="sub">A small founding team spanning telecom engineering, drone operations, AI platform development and Agile delivery — built on open O-RAN interfaces, with compliance and data security as a starting constraint, not an afterthought.</p>
+      <div class="sector-grid">
+        <div class="sector-card"><span class="mono">mission</span><h3>Ground truth, faster</h3><p>Replace slow, manual validation with drone and satellite measurement.</p></div>
+        <div class="sector-card"><span class="mono">standard</span><h3>Open by design</h3><p>Built on open O-RAN interfaces, not closed single-vendor tooling.</p></div>
+        <div class="sector-card"><span class="mono">approach</span><h3>Compliance first</h3><p>Security and regulatory compliance are starting constraints, not features added later.</p></div>
+      </div>
+
+      <div class="founders">
+        <h3 class="h">Founders</h3>
+        <div class="founder-grid">
+          <div class="founder-card">
+            <div class="founder-avatar">MN</div>
+            <h4>Dr. Mo Nadder</h4>
+            <p class="founder-role">Co-Founder</p>
+            <a class="li-link" href="https://www.linkedin.com/in/dr-mo-nadder-5b326b17/" target="_blank" rel="noopener">LinkedIn profile &rarr;</a>
+          </div>
+          <div class="founder-card">
+            <div class="founder-avatar">MA</div>
+            <h4>Mo Abdelaziz</h4>
+            <p class="founder-role">Co-Founder</p>
+            <a class="li-link" href="https://www.linkedin.com/in/mo-abdelaziz/" target="_blank" rel="noopener">LinkedIn profile &rarr;</a>
+          </div>
+          <div class="founder-card">
+            <div class="founder-avatar">AH</div>
+            <h4>Ahmed Nadder Hamdy</h4>
+            <p class="founder-role">Co-Founder, Agile Coach &amp; Scrum Master</p>
+            <a class="li-link" href="https://www.linkedin.com/in/ahmed-nadder-hamdy-msc-psm-ssm-pmp%C2%AE-0b171755/" target="_blank" rel="noopener">LinkedIn profile &rarr;</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="story" id="investors">
+    <div class="wrap">
+      <div class="story-copy">
+        <h2>A measurement company becoming a platform company</h2>
+        <p class="lead">DARA+ sits at the intersection of two shifts already underway: networks that can't tolerate manual, slow validation, and a RAN that's opening up to third-party rApps. Early stage, prototype validated, pilot partnerships in progress.</p>
+        <div class="story-links">
+          <a href="#" data-static-link><span>Hardware — Phoenix and Horus device sales</span><span class="arrow">&rarr;</span></a>
+          <a href="#" data-static-link><span>Platform subscriptions</span><span class="arrow">&rarr;</span></a>
+          <a href="#" data-static-link><span>rApp marketplace licensing</span><span class="arrow">&rarr;</span></a>
+          <a href="#" data-static-link><span>Data and closed-loop as a service</span><span class="arrow">&rarr;</span></a>
+        </div>
+      </div>
+      <div class="story-visual">
+        <svg viewBox="0 0 400 220" width="100%" height="auto" role="img" aria-label="Revenue stream diagram">
+          <g fill="none" stroke="var(--brand)" stroke-width="2">
+            <rect x="40" y="150" width="50" height="50"/>
+            <rect x="110" y="110" width="50" height="90"/>
+            <rect x="180" y="80" width="50" height="120"/>
+            <rect x="250" y="130" width="50" height="70"/>
+            <rect x="320" y="60" width="40" height="140"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-band">
+    <div class="wrap">
+      <div>
+        <h2>See how DARA+ fits a specific network or site</h2>
+        <p>Or request the investor briefing for market sizing and roadmap detail.</p>
+      </div>
+      <button class="btn" data-modal="demo">Request a demo</button>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-brand-col">
+          <div class="footer-brand">
+            <svg class="mark" viewBox="0 0 100 100" role="img" aria-label="DARA plus mark">
+              <line x1="50" y1="10" x2="14" y2="86" stroke="var(--ink)" stroke-width="9" stroke-linecap="round"/>
+              <line x1="50" y1="10" x2="86" y2="86" stroke="var(--ink)" stroke-width="9" stroke-linecap="round"/>
+              <line x1="18" y1="50" x2="82" y2="50" stroke="var(--ink)" stroke-width="9" stroke-linecap="round"/>
+              <circle cx="72" cy="50" r="5.5" fill="var(--accent)"/>
+            </svg>
+            <span class="wordmark">DARA<span>+</span></span>
+          </div>
+          <p>Drone and satellite RF validation for networks that can't go quiet.</p>
+        </div>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <ul>
+            <li><button data-scroll="svc-field">Field validation</button></li>
+            <li><button data-scroll="svc-portal">Data portal</button></li>
+            <li><button data-scroll="svc-analysis">Analysis</button></li>
+            <li><button data-scroll="svc-marketplace">rApp marketplace</button></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><button data-scroll="about">About us</button></li>
+            <li><button data-scroll="investors">Investor relations</button></li>
+            <li><a href="#" data-static-link>Careers</a></li>
+            <li><a href="#" data-static-link>Newsroom</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="#" data-static-link>Documentation</a></li>
+            <li><a href="#" data-static-link>Partner portal</a></li>
+            <li><a href="#" data-modal="demo" data-modal-link>Request a demo</a></li>
+            <li><a href="#" data-modal="partner" data-modal-link>Become a partner</a></li>
+            <li><a href="#" data-modal="login" data-modal-link>Portal login</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="#" data-static-link>Privacy policy</a></li>
+            <li><a href="#" data-static-link>Terms of service</a></li>
+            <li><a href="#" data-static-link>Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>&copy; 2026 DARA+. All rights reserved.</span>
+        <div class="legal-links">
+          <a href="#" data-static-link>Privacy</a>
+          <a href="#" data-static-link>Terms of use</a>
+          <a href="#" data-static-link>Cookie preferences</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</main>
+
+<dialog id="modal-demo">
+  <div class="modal-inner">
+    <button class="modal-close" data-close aria-label="Close">&times;</button>
+    <div class="modal-form">
+      <h2>Request a demo</h2>
+      <p class="sub-modal">Tell us about the network you want validated. We'll follow up within two working days.</p>
+      <form data-form="demo">
+        <div class="field"><label>Name</label><input type="text" required></div>
+        <div class="field"><label>Work email</label><input type="email" required></div>
+        <div class="field"><label>Organisation</label><input type="text" required></div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" data-close>Cancel</button>
+          <button type="submit" class="btn btn-brand">Send request</button>
+        </div>
+      </form>
+    </div>
+    <div class="modal-success">
+      <h2>Request sent</h2>
+      <p>We'll be in touch shortly. Close this window to keep browsing.</p>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="modal-partner">
+  <div class="modal-inner">
+    <button class="modal-close" data-close aria-label="Close">&times;</button>
+    <div class="modal-form">
+      <h2>Become a partner</h2>
+      <p class="sub-modal">MNOs, rail operators, rApp developers and O-RAN vendors welcome.</p>
+      <form data-form="partner">
+        <div class="field"><label>Name</label><input type="text" required></div>
+        <div class="field"><label>Work email</label><input type="email" required></div>
+        <div class="field"><label>Organisation</label><input type="text" required></div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" data-close>Cancel</button>
+          <button type="submit" class="btn btn-brand">Send request</button>
+        </div>
+      </form>
+    </div>
+    <div class="modal-success">
+      <h2>Request sent</h2>
+      <p>We'll be in touch shortly. Close this window to keep browsing.</p>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="modal-login">
+  <div class="modal-inner">
+    <button class="modal-close" data-close aria-label="Close">&times;</button>
+    <h2>Portal login</h2>
+    <p class="sub-modal">The DARA+ partner portal isn't live yet. Reach out and we'll set you up with early access once it launches.</p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-outline" data-close>Close</button>
+      <button type="button" class="btn btn-brand" data-modal="partner" data-modal-switch>Request access</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  (function() {
+    var root = document.documentElement;
+    var stored = null;
+    try { stored = localStorage.getItem('dara-theme'); } catch (e) {}
+    var effective = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    root.setAttribute('data-theme', effective);
+  })();
+  document.getElementById('themeToggle').addEventListener('click', function() {
+    var root = document.documentElement;
+    var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('dara-theme', next); } catch (e) {}
+  });
+
+  document.querySelectorAll('[data-static-link]').forEach(function(a) {
+    a.addEventListener('click', function(e) { e.preventDefault(); });
+  });
+
+  document.querySelectorAll('[data-scroll]').forEach(function(el) {
+    el.addEventListener('click', function(e) {
+      e.preventDefault();
+      var target = document.getElementById(el.getAttribute('data-scroll'));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.querySelectorAll('.nav-item.open').forEach(function(n) { n.classList.remove('open'); });
+    });
+  });
+
+  var ddToggle = document.querySelector('[data-dd-toggle]');
+  var ddItem = document.getElementById('productsDD');
+  ddToggle.addEventListener('click', function(e) {
+    e.stopPropagation();
+    ddItem.classList.toggle('open');
+  });
+  document.addEventListener('click', function() { ddItem.classList.remove('open'); });
+
+  var modals = { demo: document.getElementById('modal-demo'), partner: document.getElementById('modal-partner'), login: document.getElementById('modal-login') };
+  document.querySelectorAll('[data-modal]').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      if (btn.hasAttribute('data-modal-link')) e.preventDefault();
+      if (btn.hasAttribute('data-modal-switch')) { btn.closest('dialog').close(); }
+      var dlg = modals[btn.getAttribute('data-modal')];
+      var form = dlg.querySelector('.modal-form');
+      var success = dlg.querySelector('.modal-success');
+      if (form) form.style.display = '';
+      if (success) success.classList.remove('active');
+      dlg.showModal();
+    });
+  });
+  document.querySelectorAll('[data-close]').forEach(function(btn) {
+    btn.addEventListener('click', function() { btn.closest('dialog').close(); });
+  });
+  document.querySelectorAll('dialog').forEach(function(dlg) {
+    dlg.addEventListener('click', function(e) { if (e.target === dlg) dlg.close(); });
+  });
+  document.querySelectorAll('form[data-form]').forEach(function(form) {
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var dlg = form.closest('dialog');
+      dlg.querySelector('.modal-form').style.display = 'none';
+      dlg.querySelector('.modal-success').classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>
