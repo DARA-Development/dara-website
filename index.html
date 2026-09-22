@@ -340,10 +340,13 @@
     <div class="modal-form">
       <h2>Request a demo</h2>
       <p class="sub-modal">Tell us about the network you want validated. We'll follow up within two working days.</p>
-      <form data-form="demo">
-        <div class="field"><label>Name</label><input type="text" required></div>
-        <div class="field"><label>Work email</label><input type="email" required></div>
-        <div class="field"><label>Organisation</label><input type="text" required></div>
+      <form action="https://formsubmit.co/ahmed.nadder@teamdara.com" method="POST" data-form="demo">
+        <input type="hidden" name="_subject" value="DARA+ demo request">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_template" value="table">
+        <div class="field"><label for="demo-name">Name</label><input id="demo-name" type="text" name="name" required></div>
+        <div class="field"><label for="demo-email">Work email</label><input id="demo-email" type="email" name="email" required></div>
+        <div class="field"><label for="demo-organisation">Organisation</label><input id="demo-organisation" type="text" name="organisation" required></div>
         <div class="modal-actions">
           <button type="button" class="btn btn-outline" data-close>Cancel</button>
           <button type="submit" class="btn btn-brand">Send request</button>
@@ -363,10 +366,13 @@
     <div class="modal-form">
       <h2>Become a partner</h2>
       <p class="sub-modal">MNOs, rail operators, rApp developers and O-RAN vendors welcome.</p>
-      <form data-form="partner">
-        <div class="field"><label>Name</label><input type="text" required></div>
-        <div class="field"><label>Work email</label><input type="email" required></div>
-        <div class="field"><label>Organisation</label><input type="text" required></div>
+      <form action="https://formsubmit.co/ahmed.nadder@teamdara.com" method="POST" data-form="partner">
+        <input type="hidden" name="_subject" value="DARA+ partnership enquiry">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_template" value="table">
+        <div class="field"><label for="partner-name">Name</label><input id="partner-name" type="text" name="name" required></div>
+        <div class="field"><label for="partner-email">Work email</label><input id="partner-email" type="email" name="email" required></div>
+        <div class="field"><label for="partner-organisation">Organisation</label><input id="partner-organisation" type="text" name="organisation" required></div>
         <div class="modal-actions">
           <button type="button" class="btn btn-outline" data-close>Cancel</button>
           <button type="submit" class="btn btn-brand">Send request</button>
@@ -451,8 +457,23 @@
     form.addEventListener('submit', function(e) {
       e.preventDefault();
       var dlg = form.closest('dialog');
-      dlg.querySelector('.modal-form').style.display = 'none';
-      dlg.querySelector('.modal-success').classList.add('active');
+      var submitButton = form.querySelector('button[type="submit"]');
+      var ajaxAction = form.action.replace('formsubmit.co/', 'formsubmit.co/ajax/');
+      submitButton.disabled = true;
+      fetch(ajaxAction, {
+        method: 'POST',
+        body: JSON.stringify(Object.fromEntries(new FormData(form))),
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' }
+      }).then(function(response) {
+        return response.json();
+      }).then(function(result) {
+        if (!result.success) throw new Error('Form submission failed');
+        dlg.querySelector('.modal-form').style.display = 'none';
+        dlg.querySelector('.modal-success').classList.add('active');
+      }).catch(function() {
+        submitButton.disabled = false;
+        form.submit();
+      });
     });
   });
 </script>
