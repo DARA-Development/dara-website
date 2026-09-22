@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About us | DARA+</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="utility">
+  <div class="wrap">
+    <a href="index.html">Home</a>
+    <a href="index.html#investors">Investor relations</a>
+  </div>
+</div>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="brand">
+      <a href="index.html"><img class="brand-logo" src="images/logovu.png" alt="DARA+" /></a>
+    </div>
+    <nav class="primary-nav">
+      <div class="nav-item"><a class="nav-link" href="index.html">Home</a></div>
+      <div class="nav-item"><a class="nav-link" href="about_us.html" aria-current="page">About us</a></div>
+      <div class="nav-item"><a class="nav-link" href="index.html#investors">Investor relations</a></div>
+    </nav>
+    <div class="nav-actions">
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>
+      </button>
+      <a class="btn btn-brand" href="index.html#home">Request a demo</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section class="sectors" id="about">
+    <div class="wrap">
+      <h1>Built by people who've stood next to the mast</h1>
+      <p class="sub">A small founding team spanning telecom engineering, drone operations, AI platform development and Agile delivery — built on open O-RAN interfaces, with compliance and data security as a starting constraint, not an afterthought.</p>
+      <div class="sector-grid">
+        <div class="sector-card"><span class="mono">mission</span><h2>Ground truth, faster</h2><p>Replace slow, manual validation with drone and satellite measurement.</p></div>
+        <div class="sector-card"><span class="mono">standard</span><h2>Open by design</h2><p>Built on open O-RAN interfaces, not closed single-vendor tooling.</p></div>
+        <div class="sector-card"><span class="mono">approach</span><h2>Compliance first</h2><p>Security and regulatory compliance are starting constraints, not features added later.</p></div>
+      </div>
+
+      <div class="founders">
+        <h2 class="h">Founders</h2>
+        <div class="founder-grid">
+          <div class="founder-card">
+            <div class="founder-avatar">MN</div>
+            <h3>Dr. Mo Nadder</h3>
+            <p class="founder-role">Co-Founder</p>
+            <a class="li-link" href="https://www.linkedin.com/in/dr-mo-nadder-5b326b17/" target="_blank" rel="noopener">LinkedIn profile &rarr;</a>
+          </div>
+          <div class="founder-card">
+            <div class="founder-avatar">MA</div>
+            <h3>Mo Abdelaziz</h3>
+            <p class="founder-role">Co-Founder</p>
+            <a class="li-link" href="https://www.linkedin.com/in/mo-abdelaziz/" target="_blank" rel="noopener">LinkedIn profile &rarr;</a>
+          </div>
+          <div class="founder-card">
+            <div class="founder-avatar">AH</div>
+            <h3>Ahmed Nadder Hamdy</h3>
+            <p class="founder-role">Co-Founder, Agile Coach &amp; Scrum Master</p>
+            <a class="li-link" href="https://www.linkedin.com/in/ahmed-nadder-hamdy-msc-psm-ssm-pmp%C2%AE-0b171755/" target="_blank" rel="noopener">LinkedIn profile &rarr;</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-bottom">
+      <span>&copy; 2026 DARA+. All rights reserved.</span>
+      <div class="legal-links">
+        <a href="index.html">Home</a>
+        <a href="about_us.html" aria-current="page">About us</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function() {
+    var root = document.documentElement;
+    var stored = null;
+    try { stored = localStorage.getItem('dara-theme'); } catch (e) {}
+    var effective = stored || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    root.setAttribute('data-theme', effective);
+  })();
+  document.getElementById('themeToggle').addEventListener('click', function() {
+    var root = document.documentElement;
+    var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('dara-theme', next); } catch (e) {}
+  });
+</script>
+</body>
+</html>
