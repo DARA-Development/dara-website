@@ -1,0 +1,16 @@
+{
+  "name": "daraprogram-silver-engine",
+  "version": "1.0.0",
+  "description": "Website for DARA\r Under Construction\r Test if it will deploy",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
+  }
+}
