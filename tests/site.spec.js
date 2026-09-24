@@ -6,7 +6,7 @@ test.describe('homepage', () => {
   });
 
   test('renders the core sections and navigation targets', async ({ page }) => {
-    await expect(page).toHaveTitle('DARA');
+    await expect(page).toHaveTitle('DARA Telecom');
     await expect(page.locator('.hero h1')).toContainText('Ground truth');
     await expect(page.locator('.explore-card')).toHaveCount(4);
 
