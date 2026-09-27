@@ -6,7 +6,7 @@ test.describe('homepage', () => {
   });
 
   test('renders the core sections and navigation targets', async ({ page }) => {
-    await expect(page).toHaveTitle('DARA');
+    await expect(page).toHaveTitle('DARA Telecom');
     await expect(page.locator('.hero h1')).toContainText('Ground truth');
     await expect(page.locator('.explore-card')).toHaveCount(4);
 
@@ -64,7 +64,7 @@ test.describe('about page', () => {
   test('renders founder content and links back to the homepage', async ({ page }) => {
     await page.goto('/about_us.html');
 
-    await expect(page).toHaveTitle('About us | DARA+');
+    await expect(page).toHaveTitle('About us | DARA Telecom');
     await expect(page.locator('h1')).toContainText('Built by people');
     await expect(page.locator('.founder-card')).toHaveCount(3);
     await expect(page.locator('.li-link')).toHaveCount(3);
