@@ -194,6 +194,34 @@ test.describe('homepage', () => {
     await expect(search.locator('.site-search-results')).toContainText('No results found');
   });
 
+  test('collapses the header into a menu button on phones', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    const toggle = page.locator('.menu-toggle');
+    const nav = page.locator('.primary-nav');
+
+    expect(await page.evaluate(() =>
+      document.documentElement.scrollWidth - document.documentElement.clientWidth
+    )).toBe(0);
+    await expect(toggle).toBeVisible();
+    await expect(page.locator('.masthead-top .nav-actions .btn-brand')).toBeVisible();
+    await expect(nav).toBeHidden();
+    await expect(page.locator('.site-search')).toBeHidden();
+
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    await expect(nav.locator('.nav-link')).toHaveText(['Home', 'Solutions', 'Products', 'About us']);
+    await expect(page.locator('.site-search')).toBeVisible();
+    await expect(page.locator('#themeToggle')).toBeVisible();
+
+    await page.locator('.masthead [data-modal="partner"]').click();
+    await expect(page.locator('#modal-partner')).toBeVisible();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+
+    await page.setViewportSize({ width: 1365, height: 768 });
+    await expect(toggle).toBeHidden();
+    await expect(nav).toBeVisible();
+  });
+
   test('toggles dark mode and persists the preference', async ({ page }) => {
     await page.evaluate(() => localStorage.clear());
     await page.reload();

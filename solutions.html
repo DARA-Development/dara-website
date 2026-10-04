@@ -20,6 +20,9 @@
         </a>
       </div>
 
+      <button class="menu-toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="primary-nav">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
       <form class="site-search" role="search">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <circle cx="11" cy="11" r="6"/>
@@ -46,7 +49,7 @@
       </div>
     </div>
 
-    <nav class="primary-nav">
+    <nav class="primary-nav" id="primary-nav">
       <div class="nav-item"><a class="nav-link" href="index.html">Home</a></div>
       <div class="nav-item"><a class="nav-link" href="solutions.html" aria-current="page">Solutions</a></div>
       <div class="nav-item"><a class="nav-link" href="products.html">Products</a></div>
@@ -97,6 +100,7 @@
     try { localStorage.setItem('dara-theme', next); } catch (e) {}
   });
 </script>
+<script src="site-nav.js?v=dev"></script>
 <script src="contact-forms.js?v=dev"></script>
 <script src="site-search.js?v=dev"></script>
 </body>
