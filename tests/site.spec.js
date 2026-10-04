@@ -329,17 +329,39 @@ test.describe('contact forms', () => {
     expect(requests).toBe(0);
   });
 
-  test('opens the matching form from contact links on other pages', async ({ page }) => {
+  test('opens the matching form on the page the visitor is on', async ({ page }) => {
     await page.goto('/solutions.html');
     await page.locator('#contact .btn').click();
     await expect(page.locator('#modal-demo')).toBeVisible();
+    await expect(page).toHaveURL(/\/solutions\.html$/);
 
     await page.goto('/about_us.html');
-    await page.locator('.nav-actions a', { hasText: 'Become a partner' }).click();
+    await page.locator('.nav-actions button', { hasText: 'Become a partner' }).click();
     await expect(page.locator('#modal-partner')).toBeVisible();
+    await expect(page).toHaveURL(/\/about_us\.html$/);
 
     await page.goto('/products.html');
     await page.locator('.site-search + .btn').click();
     await expect(page.locator('#modal-login')).toBeVisible();
+    await page.locator('#modal-login [data-modal="partner"]').click();
+    await expect(page.locator('#modal-partner')).toBeVisible();
+    await expect(page).toHaveURL(/\/products\.html$/);
+  });
+
+  test('sends a request from a page other than the homepage', async ({ page }) => {
+    let payload;
+    await page.route('https://formsubmit.co/ajax/**', async (route) => {
+      payload = route.request().postDataJSON();
+      await route.fulfill({ json: { success: 'true', message: 'The form was submitted successfully.' } });
+    });
+    await page.goto('/about_us.html');
+    const modal = page.locator('#modal-demo');
+    await page.locator('.nav-actions .btn-brand').click();
+    await fillDemoForm(modal);
+    await modal.locator('button[type="submit"]').click();
+
+    await expect(modal.locator('.modal-success')).toBeVisible();
+    expect(payload).toMatchObject({ _subject: 'DARA Telecom demo request', email: 'test@example.com' });
+    await expect(page).toHaveURL(/\/about_us\.html$/);
   });
 });
