@@ -54,6 +54,10 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v5
 
+      - name: Stamp asset versions with the commit ID
+        run: |
+          sed -i "s/?v=[0-9A-Za-z]*\"/?v=${GITHUB_SHA::8}\"/g" *.html
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
