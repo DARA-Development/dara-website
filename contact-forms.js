@@ -1,6 +1,6 @@
 (function() {
   // Where enquiries are delivered. Change the address here to redirect every form on the site.
-  var FORM_ENDPOINT = 'https://formsubmit.co/ahmed.nadder@teamdara.com';
+  var FORM_ENDPOINT = 'https://formsubmit.co/admin@teamdara.com';
 
   function formModal(kind, title, intro, subject) {
     return '<dialog id="modal-' + kind + '">' +
