@@ -154,11 +154,14 @@ test.describe('homepage', () => {
     await expect(page).toHaveURL(/\/solutions\.html$/);
     await expect(page.locator('main > section')).toHaveCount(1);
     await expect(page.locator('#solutions-intro, .solution-card, .process-grid, .use-case-list')).toHaveCount(0);
-    expect(await page.locator('.solutions-content-space').evaluate((element) =>
-      element.getBoundingClientRect().height
-    )).toBeGreaterThanOrEqual(await page.evaluate(() => window.innerHeight));
-    await expect(page.locator('#contact')).toBeVisible();
-    await expect(page.locator('#contact h2')).toHaveText('Start with your network challenge');
+    await expect(page.locator('.solutions-card')).toHaveCount(3);
+    await expect(page.locator('.solutions-card h2')).toHaveText([
+      'Antenna Field Testing',
+      'Off-road drive testing',
+      'Non Terrestrial Networks'
+    ]);
+    await expect(page.locator('.solutions-photo')).toHaveCount(3);
+    await expect(page.locator('#contact')).toHaveCount(0);
     await page.goto('/');
     const homeMenu = page.locator('.primary-nav .nav-link');
     await homeMenu.filter({ hasText: 'Products' }).click();
@@ -359,7 +362,7 @@ test.describe('contact forms', () => {
 
   test('opens the matching form on the page the visitor is on', async ({ page }) => {
     await page.goto('/solutions.html');
-    await page.locator('#contact .btn').click();
+    await page.locator('.nav-actions .btn-brand').click();
     await expect(page.locator('#modal-demo')).toBeVisible();
     await expect(page).toHaveURL(/\/solutions\.html$/);
 
