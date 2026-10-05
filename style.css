@@ -236,6 +236,106 @@
 
 	/* ---------- CTA band ---------- */
 	.solutions-content-space { min-height: 100vh; }
+	.solutions-landing {
+		padding: 72px 0 44px;
+		background: linear-gradient(180deg, var(--surface), var(--bg) 50%);
+	}
+	.solutions-intro {
+		margin-bottom: 28px;
+	}
+	.eyebrow {
+		margin: 0 0 10px;
+		font-family: 'IBM Plex Mono', monospace;
+		font-size: 12px;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--brand);
+	}
+	.solutions-intro h1 {
+		max-width: 16ch;
+		font-size: clamp(36px, 4vw, 62px);
+		line-height: 1.02;
+	}
+	.solutions-panels {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 24px;
+	}
+	.scroll-section {
+		display: flex;
+		flex-direction: column;
+		min-height: 520px;
+		padding: 22px 20px 20px;
+		border: 1px solid var(--line);
+		border-radius: 18px;
+		background: rgba(255,255,255,0.4);
+		backdrop-filter: blur(2px);
+	}
+	:root[data-theme="dark"] .scroll-section {
+		background: rgba(15,19,24,0.7);
+	}
+	.section-header {
+		display: flex;
+		align-items: baseline;
+		gap: 12px;
+		margin-bottom: 18px;
+		padding-bottom: 14px;
+		border-bottom: 1px solid var(--line);
+	}
+	.section-header h2 {
+		font-size: clamp(24px, 2vw, 34px);
+		line-height: 1.1;
+	}
+	.scroll-panel {
+		overflow-y: auto;
+		display: flex;
+		flex-direction: column;
+		gap: 14px;
+		padding-right: 8px;
+		height: 100%;
+		min-height: 0;
+	}
+	.scroll-panel::-webkit-scrollbar {
+		width: 8px;
+	}
+	.scroll-panel::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	.scroll-panel::-webkit-scrollbar-thumb {
+		background: rgba(11,61,145,0.28);
+		border-radius: 999px;
+	}
+	.panel-item {
+		padding: 20px 18px 18px;
+		border: 1px solid var(--line);
+		border-radius: 14px;
+		background: var(--bg);
+		box-shadow: 0 6px 20px rgba(11, 61, 145, 0.04);
+	}
+	.item-tag {
+		display: inline-flex;
+		padding: 6px 9px;
+		margin-bottom: 12px;
+		border-radius: 999px;
+		background: rgba(11, 61, 145, 0.08);
+		color: var(--brand);
+		font-family: 'IBM Plex Mono', monospace;
+		font-size: 10px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		font-weight: 700;
+	}
+	.panel-item h3 {
+		margin-bottom: 8px;
+		font-size: 20px;
+		line-height: 1.2;
+	}
+	.panel-item p {
+		margin: 0;
+		font-size: 14px;
+		line-height: 1.6;
+		color: var(--ink-soft);
+	}
 	.cta-band { background: var(--brand); color: #fff; padding: 56px 0; }
 	.cta-band .wrap { display: flex; align-items: center; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
 	.cta-band h2 { font-size: 24px; color: #fff; }
