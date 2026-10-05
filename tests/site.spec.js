@@ -161,6 +161,30 @@ test.describe('homepage', () => {
       'Non Terrestrial Networks'
     ]);
     await expect(page.locator('.solutions-photo')).toHaveCount(3);
+    await expect(page.locator('.site-footer .footer-grid > *')).toHaveCount(5);
+    await expect(page.locator('.site-footer .footer-col h4')).toHaveText([
+      'Product',
+      'Company',
+      'Resources',
+      'Legal'
+    ]);
+    await expect(page.locator('.site-footer .footer-brand img.brand-logo-light')).toHaveAttribute(
+      'src',
+      'images/BlueOnWhite.png'
+    );
+    await expect(page.locator('.site-footer .footer-social-link')).toHaveAttribute(
+      'href',
+      'https://www.linkedin.com/company/dara-telecom/'
+    );
+    for (const image of await page.locator('.solutions-photo').all()) {
+      await expect(image).toHaveCSS('aspect-ratio', '1 / 1');
+      await expect(image).toHaveCSS('object-fit', 'contain');
+      const { width, height } = await image.evaluate((element) => {
+        const { width, height } = element.getBoundingClientRect();
+        return { width, height };
+      });
+      expect(width).toBeCloseTo(height, 0);
+    }
     await expect(page.locator('#contact')).toHaveCount(0);
     await page.goto('/');
     const homeMenu = page.locator('.primary-nav .nav-link');
