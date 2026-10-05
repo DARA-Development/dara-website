@@ -153,6 +153,7 @@ test.describe('homepage', () => {
     await expect(page).toHaveTitle('Solutions | DARA Telecom');
     await expect(page).toHaveURL(/\/solutions\.html$/);
     await expect(page.locator('main > section')).toHaveCount(1);
+    await expect(page.locator('.solutions-header')).toHaveCount(0);
     await expect(page.locator('#solutions-intro, .solution-card, .process-grid, .use-case-list')).toHaveCount(0);
     await expect(page.locator('.solutions-card')).toHaveCount(3);
     await expect(page.locator('.solutions-card h2')).toHaveText([

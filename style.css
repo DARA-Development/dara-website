@@ -247,9 +247,6 @@
 		padding: 72px 0 44px;
 		background: linear-gradient(180deg, var(--surface), var(--bg) 50%);
 	}
-	.solutions-header {
-		margin-bottom: 28px;
-	}
 	.eyebrow {
 		margin: 0 0 10px;
 		font-family: 'IBM Plex Mono', monospace;
@@ -257,18 +254,6 @@
 		letter-spacing: 0.14em;
 		text-transform: uppercase;
 		color: var(--brand);
-	}
-	.solutions-header h1 {
-		margin: 0;
-		padding-left: 6pt;
-		font-size: clamp(23.04px, 2.56vw, 39.68px);
-		line-height: 1.02;
-	}
-	.solutions-brand-name {
-		font-family: 'Bartomes', 'Manrope', sans-serif;
-	}
-	.solutions-title-text {
-		font-family: 'Manrope', sans-serif;
 	}
 	.solutions-grid {
 		display: grid;
