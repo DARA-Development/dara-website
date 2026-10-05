@@ -200,17 +200,13 @@ test.describe('homepage', () => {
     await expect(homeMenu.filter({ hasText: 'Partners' })).toHaveCount(0);
   });
 
-  test('searches site sections across both pages', async ({ page }) => {
+  test('searches only existing site sections across both pages', async ({ page }) => {
     const search = page.locator('.site-search');
     await search.locator('input').fill('founder');
     await search.locator('input').press('Enter');
 
-    const result = search.locator('.site-search-results a', { hasText: 'Built by people' });
-    await expect(result).toBeVisible();
-    await result.click();
-    await expect(page).toHaveURL(/about_us\.html#about$/);
-    await expect(page.locator('#about h1')).toBeInViewport();
-    await expect(page.locator('.site-search-results')).toBeHidden();
+    await expect(search.locator('.site-search-results a', { hasText: 'Built by people' })).toHaveCount(0);
+    await expect(search.locator('.site-search-message')).toContainText('No results found');
   });
 
   test('shows feedback when search has no matches', async ({ page }) => {
@@ -285,7 +281,7 @@ test.describe('homepage', () => {
 });
 
 test.describe('about page', () => {
-  test('renders founder content and links back to the homepage', async ({ page }) => {
+  test('keeps the navigation and footer when page content is removed', async ({ page }) => {
     await page.goto('/about_us.html');
 
     await expect(page).toHaveTitle('About us | DARA Telecom');
@@ -296,15 +292,15 @@ test.describe('about page', () => {
     await expect(page.locator('.site-search-submit svg')).toBeVisible();
     await expect(page.locator('.site-search + .btn')).toHaveText('Portal login');
     await expect(page.locator('.masthead-top .nav-actions .btn-brand')).toHaveText('Contact us');
-    await expect(page.locator('h1')).toContainText('Built by people');
-    await expect(page.locator('.founder-card')).toHaveCount(3);
-    await expect(page.locator('.li-link')).toHaveCount(3);
+    await expect(page.locator('main')).toHaveCount(0);
+    await expect(page.locator('.founder-card, .li-link')).toHaveCount(0);
     await expect(page.locator('.brand a')).toHaveAttribute('href', 'index.html');
     await expect(page.locator('.primary-nav .nav-link')).toHaveText([
       'Home', 'Solutions', 'Products', 'About us'
     ]);
     await expect(page.locator('.primary-nav .nav-link').nth(1)).toHaveAttribute('href', 'solutions.html');
     await expect(page.locator('.primary-nav .nav-link').nth(2)).toHaveAttribute('href', 'products.html');
+    await expect(page.locator('.site-footer')).toBeVisible();
 
     const search = page.locator('.site-search');
     await search.locator('input').fill('What we offer');
