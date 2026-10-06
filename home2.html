@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css?v=dev">
 </head>
-<body class="video-home">
+<body>
 
 <!-- <div class="utility">
   <div class="wrap">
@@ -67,15 +67,59 @@
 </header>
 
 <main>
-  <div class="hero-banner">
-    <video class="hero-banner-video" autoplay muted loop playsinline aria-label="DARA Telecom Pi real-flight video">
-      <source src="videos/2026.10-PiRealFlightShort.mp4" type="video/mp4">
-      Your browser does not support the video element.
-    </video>
-    <div class="hero-banner-blue-overlay" aria-hidden="true"></div>
-  </div>
-
   <section class="hero" id="home">
+    <div class="hero-banner">
+      <img src="images/dara-telecom-our-vision-banner-muted.webp" alt="DARA Telecom's vision for connected networks across drone, satellite and rail" />
+      <svg class="hero-banner-fx" viewBox="0 0 1920 310" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+        <defs>
+          <radialGradient id="fx-heat"><stop offset="0" stop-color="#fff" stop-opacity="0.55"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient>
+          <radialGradient id="fx-glow"><stop offset="0" stop-color="#fff"/><stop offset="0.4" stop-color="#9fd8ff" stop-opacity="0.8"/><stop offset="1" stop-color="#9fd8ff" stop-opacity="0"/></radialGradient>
+        </defs>
+        <ellipse class="fx-heat" cx="255" cy="168" rx="190" ry="34" fill="url(#fx-heat)"/>
+        <g class="fx-links">
+          <path d="M250 95 Q380 55 510 40"/>
+          <path d="M510 40 Q650 18 790 25"/>
+          <path d="M790 25 Q1020 5 1250 30"/>
+          <path d="M1250 30 Q1520 20 1775 50"/>
+          <path d="M1775 50 L1660 115"/>
+          <path d="M1250 30 L1213 140"/>
+          <path d="M790 25 L655 130"/>
+        </g>
+        <g class="fx-rings">
+          <circle class="fx-ring" cx="1213" cy="140" r="34" style="animation-delay:0.0s"/>
+          <circle class="fx-ring" cx="1213" cy="140" r="34" style="animation-delay:1.0s"/>
+          <circle class="fx-ring" cx="1213" cy="140" r="34" style="animation-delay:2.0s"/>
+          <circle class="fx-ring" cx="1322" cy="178" r="24" style="animation-delay:0.5s"/>
+          <circle class="fx-ring" cx="1322" cy="178" r="24" style="animation-delay:1.5s"/>
+          <circle class="fx-ring" cx="1322" cy="178" r="24" style="animation-delay:2.5s"/>
+          <circle class="fx-ring" cx="1418" cy="160" r="28" style="animation-delay:1.1s"/>
+          <circle class="fx-ring" cx="1418" cy="160" r="28" style="animation-delay:2.1s"/>
+          <circle class="fx-ring" cx="1418" cy="160" r="28" style="animation-delay:3.1s"/>
+          <circle class="fx-ring" cx="1545" cy="180" r="26" style="animation-delay:0.3s"/>
+          <circle class="fx-ring" cx="1545" cy="180" r="26" style="animation-delay:1.3s"/>
+          <circle class="fx-ring" cx="1545" cy="180" r="26" style="animation-delay:2.3s"/>
+          <circle class="fx-ring" cx="655" cy="130" r="26" style="animation-delay:0.8s"/>
+          <circle class="fx-ring" cx="655" cy="130" r="26" style="animation-delay:1.8s"/>
+          <circle class="fx-ring" cx="655" cy="130" r="26" style="animation-delay:2.8s"/>
+          <circle class="fx-ring fx-ring-warm" cx="1660" cy="115" r="60" style="animation-delay:0.4s"/>
+          <circle class="fx-ring fx-ring-warm" cx="1660" cy="115" r="60" style="animation-delay:1.4s"/>
+          <circle class="fx-ring fx-ring-warm" cx="1660" cy="115" r="60" style="animation-delay:2.4s"/>
+          <circle class="fx-ring fx-ring-soft" cx="510" cy="40" r="16" style="animation-delay:0.2s"/>
+          <circle class="fx-ring fx-ring-soft" cx="510" cy="40" r="16" style="animation-delay:1.2s"/>
+          <circle class="fx-ring fx-ring-soft" cx="510" cy="40" r="16" style="animation-delay:2.2s"/>
+          <circle class="fx-ring fx-ring-soft" cx="790" cy="25" r="16" style="animation-delay:0.9s"/>
+          <circle class="fx-ring fx-ring-soft" cx="790" cy="25" r="16" style="animation-delay:1.9s"/>
+          <circle class="fx-ring fx-ring-soft" cx="790" cy="25" r="16" style="animation-delay:2.9s"/>
+          <circle class="fx-ring fx-ring-soft" cx="1250" cy="30" r="16" style="animation-delay:0.5s"/>
+          <circle class="fx-ring fx-ring-soft" cx="1250" cy="30" r="16" style="animation-delay:1.5s"/>
+          <circle class="fx-ring fx-ring-soft" cx="1250" cy="30" r="16" style="animation-delay:2.5s"/>
+          <circle class="fx-ring fx-ring-soft" cx="1775" cy="50" r="16" style="animation-delay:1.3s"/>
+          <circle class="fx-ring fx-ring-soft" cx="1775" cy="50" r="16" style="animation-delay:2.3s"/>
+          <circle class="fx-ring fx-ring-soft" cx="1775" cy="50" r="16" style="animation-delay:3.3s"/>
+        </g>
+        <circle class="fx-train" r="9" fill="url(#fx-glow)"><animateMotion dur="9s" repeatCount="indefinite" path="M1100 203 Q1450 205 1850 246"/></circle>
+      </svg>
+    </div>
     <div class="wrap hero-offerings" id="solutions">
       <h1>What we offer and nobody else can</h1>
       <div class="offer-grid" id="products">
@@ -186,19 +230,6 @@
 </main>
 
 <script>
-  var heroBannerVideo = document.querySelector('.hero-banner-video');
-  heroBannerVideo.playbackRate = 0.5;
-
-  var masthead = document.querySelector('.masthead');
-  function updateVideoBackgroundOffset() {
-    document.documentElement.style.setProperty(
-      '--masthead-height',
-      masthead.getBoundingClientRect().height + 'px'
-    );
-  }
-  updateVideoBackgroundOffset();
-  window.addEventListener('resize', updateVideoBackgroundOffset);
-
   (function() {
     var root = document.documentElement;
     var stored = null;

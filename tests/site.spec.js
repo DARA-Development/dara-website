@@ -56,11 +56,34 @@ test.describe('homepage', () => {
       page.locator('.offer-card:nth-child(3) .offer-card-image').evaluate((image) => image.naturalWidth)
     ).toBeGreaterThan(0);
     await expect(page.locator('.offer-card:nth-child(3) .offer-card-content')).toContainText('Analysis that turns into action');
-    await expect(page.locator('.hero-banner img')).toHaveAttribute('src', 'images/dara-telecom-our-vision-banner-muted.webp');
-    await expect(page.locator('.hero-banner img')).toBeVisible();
-    await expect.poll(() => page.locator('.hero-banner img').evaluate((image) => image.naturalWidth)).toBeGreaterThan(0);
-    expect(await page.locator('.hero-banner img').evaluate((image) => image.getBoundingClientRect().width))
+    const bannerVideo = page.locator('.hero-banner video');
+    await expect(page.locator('.hero-banner img')).toHaveCount(0);
+    await expect(bannerVideo).toHaveAttribute('autoplay', '');
+    await expect(bannerVideo).toHaveAttribute('muted', '');
+    await expect(bannerVideo).toHaveAttribute('loop', '');
+    await expect.poll(() => bannerVideo.evaluate((video) => video.playbackRate)).toBe(0.5);
+    await expect(bannerVideo.locator('source')).toHaveAttribute('src', 'videos/2026.10-PiRealFlightShort.mp4');
+    await expect.poll(() => bannerVideo.evaluate((video) => video.videoWidth)).toBeGreaterThan(0);
+    expect(await bannerVideo.evaluate((video) => video.getBoundingClientRect().width))
       .toBe(await page.evaluate(() => document.documentElement.clientWidth));
+    const bannerOverlay = page.locator('.hero-banner-blue-overlay');
+    const videoBounds = await bannerVideo.evaluate((video) => video.getBoundingClientRect().toJSON());
+    const overlayBounds = await bannerOverlay.evaluate((overlay) => overlay.getBoundingClientRect().toJSON());
+    expect(overlayBounds).toMatchObject({
+      x: videoBounds.x,
+      y: videoBounds.y,
+      width: videoBounds.width,
+      height: videoBounds.height
+    });
+    await expect(bannerOverlay).toHaveCSS('background-color', 'rgba(11, 61, 145, 0.4)');
+    const partnerCta = page.locator('.hero-ctas [data-modal="partner"]');
+    await expect(partnerCta).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+    await expect(partnerCta).toHaveCSS('opacity', '1');
+    const bannerTop = await page.locator('.hero-banner').evaluate((banner) => banner.getBoundingClientRect().top);
+    await page.evaluate(() => window.scrollTo(0, 250));
+    await expect.poll(() =>
+      page.locator('.hero-banner').evaluate((banner) => banner.getBoundingClientRect().top)
+    ).toBeCloseTo(bannerTop, 0);
     await expect(page.locator('.explore-card')).toHaveCount(0);
     await expect(page.locator('.cta-band h2')).toHaveText('See how DARA Telecom fits a specific network or site');
     await expect(page.locator('main > section')).toHaveCount(2);
@@ -68,6 +91,7 @@ test.describe('homepage', () => {
     await expect(page.locator('.footer-brand .brand-logo-dark')).toHaveAttribute('src', /WhiteBlueOnBlack\.png$/);
     await expect(page.locator('.footer-brand .brand-logo-light')).toHaveCSS('height', '42px');
     await expect(page.locator('.footer-brand .brand-logo-dark')).toHaveCSS('height', '42px');
+    await expect(page.locator('.site-footer')).toHaveCSS('background-color', 'rgba(255, 255, 255, 0.8)');
     await expect(page.locator('.footer-brand .brand-logo-light')).toHaveAttribute('alt', 'DARA Telecom');
     const linkedInLink = page.locator('.footer-social-link');
     await expect(linkedInLink).toHaveAttribute('href', 'https://www.linkedin.com/company/dara-telecom/');
@@ -102,12 +126,14 @@ test.describe('homepage', () => {
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   });
 
-  test('keeps the full offer section and its CTAs visible on a standard desktop viewport', async ({ page }) => {
+  test('keeps the full-width video banner and offer CTAs accessible on desktop', async ({ page }) => {
     await page.setViewportSize({ width: 1365, height: 768 });
 
-    await expect(page.locator('.hero-banner')).toBeInViewport({ ratio: 1 });
-    await expect(page.locator('.hero h1')).toBeInViewport({ ratio: 1 });
-    await expect(page.locator('.offer-grid')).toBeInViewport({ ratio: 1 });
+    const video = page.locator('.hero-banner video');
+    await expect.poll(() => video.evaluate((element) => element.videoWidth)).toBeGreaterThan(0);
+    expect(await video.evaluate((element) => element.getBoundingClientRect().width))
+      .toBe(await page.evaluate(() => document.documentElement.clientWidth));
+    await page.locator('.hero-ctas').scrollIntoViewIfNeeded();
     await expect(page.locator('.hero-ctas')).toBeInViewport({ ratio: 1 });
   });
 
@@ -279,6 +305,22 @@ test.describe('homepage', () => {
     await expect(page.locator('#modal-login .sub-modal')).toContainText('DARA Telecom partner portal');
   });
 
+});
+
+test.describe('home2 page', () => {
+  test('retains the original image banner instead of showing the video', async ({ page }) => {
+    await page.goto('/home2.html');
+
+    const banner = page.locator('.hero-banner');
+    const image = banner.locator('img');
+    await expect(image).toHaveAttribute('src', 'images/dara-telecom-our-vision-banner-muted.webp');
+    await expect(image).toBeVisible();
+    await expect(banner.locator('video')).toHaveCount(0);
+    await expect.poll(() => image.evaluate((element) => element.naturalWidth)).toBeGreaterThan(0);
+    expect(await image.evaluate((element) => element.getBoundingClientRect().width))
+      .toBe(await page.evaluate(() => window.innerWidth));
+    await expect(banner.locator('.hero-banner-fx')).toBeVisible();
+  });
 });
 
 test.describe('about page', () => {

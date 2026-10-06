@@ -155,6 +155,15 @@
 	.hero { background: linear-gradient(180deg, var(--surface), var(--bg) 70%); border-bottom: 1px solid var(--line); }
 	.hero-banner img { display: block; width: 100%; height: auto; }
 	.hero-banner { position: relative; overflow: hidden; }
+	.hero-banner video { display: block; width: 100%; height: auto; }
+	.hero-banner-blue-overlay { position: absolute; inset: 0; z-index: 1; background: rgb(11 61 145 / 40%); pointer-events: none; }
+	.video-home .hero-banner { position: sticky; top: var(--masthead-height, 0px); z-index: 0; }
+	.video-home .hero { background: transparent; }
+	.video-home .hero-offerings,
+	.video-home .cta-band,
+	.video-home .site-footer { position: relative; z-index: 1; }
+	.video-home .hero-ctas [data-modal="partner"] { background: #fff; border-color: #fff; color: #10151C; opacity: 1; }
+	.video-home .site-footer { background: rgb(255 255 255 / 80%); }
 	.hero-banner-fx { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 	.fx-ring { fill: none; stroke: #9fd8ff; stroke-width: 1.5; opacity: 0; transform-box: fill-box; transform-origin: center; animation: fx-pulse 3s ease-out infinite; }
 	.fx-ring-warm { stroke: #ffd591; }
