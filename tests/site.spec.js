@@ -156,7 +156,16 @@ test.describe('homepage', () => {
     await expect.poll(() => video.evaluate((element) => element.videoWidth)).toBeGreaterThan(0);
     expect(await video.evaluate((element) => element.getBoundingClientRect().width))
       .toBe(await page.evaluate(() => document.documentElement.clientWidth));
-    await page.locator('.hero-ctas').scrollIntoViewIfNeeded();
+    const hero = page.locator('.hero');
+    await page.locator('.hero-banner-tagline').evaluate((tagline) => {
+      tagline.classList.add('is-visible');
+      tagline.getAnimations()[0].finish();
+    });
+    await expect(hero).toHaveClass(/is-presented/);
+    const videoHeight = await video.evaluate((element) => element.getBoundingClientRect().height);
+    await expect.poll(() =>
+      hero.evaluate((element) => parseFloat(getComputedStyle(element).marginTop))
+    ).toBeCloseTo(-videoHeight, 0);
     await expect(page.locator('.hero-ctas')).toBeInViewport({ ratio: 1 });
   });
 
@@ -190,11 +199,15 @@ test.describe('homepage', () => {
       const dimensions = await image.evaluate((element) => {
         const bounds = element.getBoundingClientRect();
         return {
+          renderedWidth: bounds.width,
+          renderedHeight: bounds.height,
           renderedRatio: bounds.width / bounds.height,
           naturalRatio: element.naturalWidth / element.naturalHeight
         };
       });
       expect(dimensions.renderedRatio).toBeCloseTo(dimensions.naturalRatio, 2);
+      expect(dimensions.renderedWidth).toBe(dimensions.renderedHeight);
+      expect(dimensions.renderedWidth).toBeLessThanOrEqual(180);
       await expect(card).toHaveCSS('border-radius', '18px');
     }
   });

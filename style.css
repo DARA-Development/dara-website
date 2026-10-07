@@ -197,7 +197,7 @@
 	@media (prefers-reduced-motion: reduce) { .hero-banner-fx { display: none; } }
 	.hero .wrap { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px; align-items: center; padding-top: 72px; padding-bottom: 64px; }
 	.hero .hero-offerings { display: block; padding-top: 56px; padding-bottom: 56px; }
-	.hero-offerings .solutions-photo { height: auto; aspect-ratio: auto; object-fit: contain; }
+	.hero-offerings .solutions-photo { width: clamp(112px, 20vh, 180px); height: auto; aspect-ratio: 1; margin-inline: auto; object-fit: contain; }
 	.offer-grid { display: grid; width: 100%; margin-inline: auto; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
 	.offer-card {
 		display: flex; flex-direction: column; justify-content: center; align-items: center;
