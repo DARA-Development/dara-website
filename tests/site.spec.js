@@ -17,6 +17,8 @@ test.describe('homepage', () => {
     await expect(page.locator('.site-search-submit svg')).toBeVisible();
     await expect(page.locator('.site-search + .btn')).toHaveText('Portal login');
     await expect(page.locator('.masthead-top .nav-actions .btn-brand')).toHaveText('Contact us');
+    await expect(page.getByText('ABOUT DARA', { exact: true })).toHaveCount(0);
+    await expect(page.getByText('THE PEOPLE BEHIND DARA', { exact: true })).toHaveCount(0);
     await expect(page.locator('.hero h1')).toHaveText('What we offer and nobody else can');
     await page.locator('html').evaluate((element) => element.setAttribute('data-theme', 'light'));
     await expect(page.locator('.hero h1')).toHaveCSS('color', 'rgb(0, 0, 0)');
@@ -324,7 +326,7 @@ test.describe('home2 page', () => {
 });
 
 test.describe('about page', () => {
-  test('keeps the navigation and footer when page content is removed', async ({ page }) => {
+  test('shows goal, mission, vision, and founding team photo slots', async ({ page }) => {
     await page.goto('/about_us.html');
 
     await expect(page).toHaveTitle('About us | DARA Telecom');
@@ -335,8 +337,24 @@ test.describe('about page', () => {
     await expect(page.locator('.site-search-submit svg')).toBeVisible();
     await expect(page.locator('.site-search + .btn')).toHaveText('Portal login');
     await expect(page.locator('.masthead-top .nav-actions .btn-brand')).toHaveText('Contact us');
-    await expect(page.locator('main')).toHaveCount(0);
-    await expect(page.locator('.founder-card, .li-link')).toHaveCount(0);
+    await expect(page.locator('main h1')).toHaveText('Building what’s next in telecom.');
+    await expect(page.locator('.about-purpose-card')).toHaveCount(3);
+    await expect(page.locator('.about-purpose-card').nth(0)).toContainText('Help network operators make faster, more confident decisions');
+    await expect(page.locator('.about-purpose-card').nth(1)).toContainText('Give network operators a faster, clearer picture');
+    await expect(page.locator('.about-purpose-card').nth(2)).toContainText('To redefine what’s possible in telecom');
+    await expect(page.locator('.about-purpose-card .about-eyebrow')).toHaveText([
+      'OUR GOAL', 'OUR MISSION', 'OUR VISION'
+    ]);
+    await expect(page.locator('.about-purpose-image')).toHaveCount(3);
+    await expect(page.locator('.about-purpose-image').nth(0)).toHaveAttribute('src', 'images/about-goal-scene.svg');
+    await expect(page.locator('.about-purpose-image').nth(0)).toHaveAttribute('alt', /drone sending measurements to an analytics dashboard/);
+    await expect(page.locator('.about-purpose-image').nth(1)).toHaveAttribute('src', 'images/about-mission-scene.svg');
+    await expect(page.locator('.about-purpose-image').nth(1)).toHaveAttribute('alt', /network-inspection drone/);
+    await expect(page.locator('.about-purpose-image').nth(2)).toHaveAttribute('src', 'images/about-vision-scene.svg');
+    await expect(page.locator('.about-purpose-image').nth(2)).toHaveAttribute('alt', /connected cities and a high-speed train/);
+    await expect.poll(() => page.locator('.about-purpose-image').evaluateAll((images) =>
+      images.every((image) => image.complete && image.naturalWidth > 0)
+    )).toBe(true);
     await expect(page.locator('.brand a')).toHaveAttribute('href', 'index.html');
     await expect(page.locator('.primary-nav .nav-link')).toHaveText([
       'Home', 'Solutions', 'Products', 'About us'
@@ -344,11 +362,19 @@ test.describe('about page', () => {
     await expect(page.locator('.primary-nav .nav-link').nth(1)).toHaveAttribute('href', 'solutions.html');
     await expect(page.locator('.primary-nav .nav-link').nth(2)).toHaveAttribute('href', 'products.html');
     await expect(page.locator('.site-footer')).toBeVisible();
+    await expect(page.locator('#about-team-title')).toHaveText('Team');
+    await expect(page.locator('.about-team-heading > p:last-child')).toHaveText('Meet the team building what’s next in telecom.');
+    await expect(page.locator('.about-team-photo')).toHaveCount(3);
+    await expect(page.locator('.about-team-photo[role="img"]').nth(0)).toHaveAttribute('aria-label', 'Photo placeholder for founding team member 1');
+    await expect(page.locator('.about-team-slot h3')).toHaveText([
+      'Mo Nadder', 'Ahmed Nadder', 'Mo Abdelaziz'
+    ]);
+    await expect(page.locator('.about-team-slot > p')).toHaveText(['CTO', 'CIO', 'CIO']);
 
     const search = page.locator('.site-search');
-    await search.locator('input').fill('What we offer');
+    await search.locator('input').fill('mission');
     await search.locator('input').press('Enter');
-    await expect(search.locator('.site-search-results a', { hasText: 'What we offer and nobody else' })).toBeVisible();
+    await expect(search.locator('.site-search-results a', { hasText: 'Building what’s next in telecom.' })).toBeVisible();
 
   });
 });

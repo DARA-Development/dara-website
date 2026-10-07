@@ -8,6 +8,7 @@ const contentTypes = {
   '.css': 'text/css',
   '.html': 'text/html',
   '.png': 'image/png',
+  '.svg': 'image/svg+xml',
 };
 
 const server = createServer(async (request, response) => {
