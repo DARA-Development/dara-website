@@ -73,35 +73,37 @@
       Your browser does not support the video element.
     </video>
     <div class="hero-banner-blue-overlay" aria-hidden="true"></div>
+    <div class="hero-banner-tagline">
+      <p>Dare to Reach</p>
+    </div>
   </div>
 
   <section class="hero" id="home">
     <div class="wrap hero-offerings" id="solutions">
-      <h1>What we offer and nobody else can</h1>
-      <div class="offer-grid" id="products">
-        <article class="offer-card" id="svc-field">
-          <img class="offer-card-image" src="images/dara-drone-satellite-rf-validation.webp" alt="Drone and satellites measuring RF coverage over a railway network" />
-          <div class="offer-card-content">
+      <div class="solutions-grid" id="products">
+        <article class="solutions-card" id="svc-field">
+            <img class="solutions-photo" src="images/dara-drone-satellite-rf-validation.webp" alt="Drone and satellites measuring RF coverage over a railway network" />
             <span class="offer-number">01</span>
             <h2>Drone + satellite RF validation</h2>
-            <p>Measure coverage where ground-based testing cannot reach, across mission-critical, railway and satellite-to-device networks.</p>
-          </div>
+            <ul>
+              <li>Measure coverage where ground-based testing cannot reach, across mission-critical, railway and satellite-to-device networks.</li>
+            </ul>
         </article>
-        <article class="offer-card" id="svc-portal">
-          <img class="offer-card-image" src="images/dara-secure-audit-ready-data-portal.webp" alt="Secure data portal with network monitoring, encrypted storage and access controls" />
-          <div class="offer-card-content">
+        <article class="solutions-card" id="svc-portal">
+            <img class="solutions-photo" src="images/dara-secure-audit-ready-data-portal.webp" alt="Secure data portal with network monitoring, encrypted storage and access controls" />
             <span class="offer-number">02</span>
             <h2>Secure, audit-ready data portal</h2>
-            <p>Bring every capture into one encrypted, access-controlled home built for compliance and operational audit.</p>
-          </div>
+            <ul>
+              <li>Bring every capture into one encrypted, access-controlled home built for compliance and operational audit.</li>
+            </ul>
         </article>
-        <article class="offer-card" id="svc-analysis">
-          <img class="offer-card-image" src="images/dara-analysis-action-automation.webp" alt="Network analytics dashboard turning measurements into automated actions" />
-          <div class="offer-card-content">
+        <article class="solutions-card" id="svc-analysis">
+            <img class="solutions-photo" src="images/dara-analysis-action-automation.webp" alt="Network analytics dashboard turning measurements into automated actions" />
             <span class="offer-number">03</span>
             <h2>Analysis that turns into action</h2>
-            <p>Transform raw network measurements into practical tuning guidance and O-RAN-aligned rApp automation.</p>
-          </div>
+            <ul>
+              <li>Transform raw network measurements into practical tuning guidance and O-RAN-aligned rApp automation.</li>
+            </ul>
         </article>
       </div>
       <div class="hero-ctas">
@@ -188,12 +190,34 @@
 <script>
   var heroBannerVideo = document.querySelector('.hero-banner-video');
   heroBannerVideo.playbackRate = 0.5;
+  var heroBannerTagline = document.querySelector('.hero-banner-tagline');
+  var heroSection = document.querySelector('.hero');
+  var taglineShown = false;
+  heroBannerVideo.addEventListener('timeupdate', function() {
+    var taglineStart = heroBannerVideo.duration - 1.15;
+    if (!taglineShown && Number.isFinite(taglineStart) && heroBannerVideo.currentTime >= taglineStart) {
+      taglineShown = true;
+      heroBannerTagline.classList.add('is-visible');
+    }
+  });
+  heroBannerTagline.addEventListener('animationend', function(event) {
+    if (event.target !== heroBannerTagline) return;
+    document.documentElement.style.setProperty(
+      '--hero-banner-height',
+      heroBannerVideo.getBoundingClientRect().height + 'px'
+    );
+    heroSection.classList.add('is-presented');
+  });
 
   var masthead = document.querySelector('.masthead');
   function updateVideoBackgroundOffset() {
     document.documentElement.style.setProperty(
       '--masthead-height',
       masthead.getBoundingClientRect().height + 'px'
+    );
+    document.documentElement.style.setProperty(
+      '--hero-banner-height',
+      heroBannerVideo.getBoundingClientRect().height + 'px'
     );
   }
   updateVideoBackgroundOffset();

@@ -19,45 +19,33 @@ test.describe('homepage', () => {
     await expect(page.locator('.masthead-top .nav-actions .btn-brand')).toHaveText('Contact us');
     await expect(page.getByText('ABOUT DARA', { exact: true })).toHaveCount(0);
     await expect(page.getByText('THE PEOPLE BEHIND DARA', { exact: true })).toHaveCount(0);
-    await expect(page.locator('.hero h1')).toHaveText('What we offer and nobody else can');
-    await page.locator('html').evaluate((element) => element.setAttribute('data-theme', 'light'));
-    await expect(page.locator('.hero h1')).toHaveCSS('color', 'rgb(0, 0, 0)');
-    await page.locator('html').evaluate((element) => element.setAttribute('data-theme', 'dark'));
-    await expect(page.locator('.hero h1')).toHaveCSS('color', 'rgb(255, 255, 255)');
-    await page.locator('html').evaluate((element) => element.setAttribute('data-theme', 'light'));
-    await expect(page.locator('.offer-card')).toHaveCount(3);
-    await expect(page.locator('.offer-card:first-child .offer-card-image')).toHaveAttribute(
+    await expect(page.getByRole('heading', { name: 'What we offer and nobody else can' })).toHaveCount(0);
+    await expect(page.locator('.hero-offerings .solutions-card')).toHaveCount(3);
+    await expect(page.locator('.hero-offerings .solutions-card:first-child .solutions-photo')).toHaveAttribute(
       'src',
       'images/dara-drone-satellite-rf-validation.webp'
     );
     await expect.poll(() =>
-      page.locator('.offer-card:first-child .offer-card-image').evaluate((image) => image.naturalWidth)
+      page.locator('.hero-offerings .solutions-card:first-child .solutions-photo').evaluate((image) => image.naturalWidth)
     ).toBeGreaterThan(0);
-    await expect(page.locator('.offer-card:first-child .offer-card-image')).toHaveCSS('object-fit', 'contain');
-    expect(Math.abs(
-      await page.locator('.offer-card:first-child .offer-card-image').evaluate((image) =>
-        image.getBoundingClientRect().width
-      ) - await page.locator('.offer-card:first-child').evaluate((card) =>
-        card.clientWidth
-      )
-    )).toBeLessThan(1);
-    await expect(page.locator('.offer-card:first-child .offer-card-content')).toContainText('Drone + satellite RF validation');
-    await expect(page.locator('.offer-card:nth-child(2) .offer-card-image')).toHaveAttribute(
+    await expect(page.locator('.hero-offerings .solutions-card:first-child .solutions-photo')).toHaveCSS('object-fit', 'contain');
+    await expect(page.locator('.hero-offerings .solutions-card:first-child')).toContainText('Drone + satellite RF validation');
+    await expect(page.locator('.hero-offerings .solutions-card:nth-child(2) .solutions-photo')).toHaveAttribute(
       'src',
       'images/dara-secure-audit-ready-data-portal.webp'
     );
     await expect.poll(() =>
-      page.locator('.offer-card:nth-child(2) .offer-card-image').evaluate((image) => image.naturalWidth)
+      page.locator('.hero-offerings .solutions-card:nth-child(2) .solutions-photo').evaluate((image) => image.naturalWidth)
     ).toBeGreaterThan(0);
-    await expect(page.locator('.offer-card:nth-child(2) .offer-card-content')).toContainText('Secure, audit-ready data portal');
-    await expect(page.locator('.offer-card:nth-child(3) .offer-card-image')).toHaveAttribute(
+    await expect(page.locator('.hero-offerings .solutions-card:nth-child(2)')).toContainText('Secure, audit-ready data portal');
+    await expect(page.locator('.hero-offerings .solutions-card:nth-child(3) .solutions-photo')).toHaveAttribute(
       'src',
       'images/dara-analysis-action-automation.webp'
     );
     await expect.poll(() =>
-      page.locator('.offer-card:nth-child(3) .offer-card-image').evaluate((image) => image.naturalWidth)
+      page.locator('.hero-offerings .solutions-card:nth-child(3) .solutions-photo').evaluate((image) => image.naturalWidth)
     ).toBeGreaterThan(0);
-    await expect(page.locator('.offer-card:nth-child(3) .offer-card-content')).toContainText('Analysis that turns into action');
+    await expect(page.locator('.hero-offerings .solutions-card:nth-child(3)')).toContainText('Analysis that turns into action');
     const bannerVideo = page.locator('.hero-banner video');
     await expect(page.locator('.hero-banner img')).toHaveCount(0);
     await expect(bannerVideo).toHaveAttribute('autoplay', '');
@@ -71,6 +59,37 @@ test.describe('homepage', () => {
     const bannerOverlay = page.locator('.hero-banner-blue-overlay');
     const videoBounds = await bannerVideo.evaluate((video) => video.getBoundingClientRect().toJSON());
     const overlayBounds = await bannerOverlay.evaluate((overlay) => overlay.getBoundingClientRect().toJSON());
+    const bannerTagline = page.locator('.hero-banner-tagline');
+    await expect(bannerTagline).toHaveText('Dare to Reach');
+    await expect(bannerTagline).toHaveCSS('position', 'absolute');
+    await expect(bannerTagline).toHaveCSS('z-index', '2');
+    await expect(bannerTagline).toHaveCSS('opacity', '0');
+    await bannerVideo.evaluate((video) => {
+      Object.defineProperty(video, 'duration', { configurable: true, get: () => 6.5 });
+      Object.defineProperty(video, 'currentTime', { configurable: true, get: () => 5.2 });
+      video.dispatchEvent(new Event('timeupdate'));
+    });
+    await expect(bannerTagline).not.toHaveClass(/is-visible/);
+    await bannerVideo.evaluate((video) => {
+      Object.defineProperty(video, 'currentTime', { configurable: true, get: () => 5.35 });
+      video.dispatchEvent(new Event('timeupdate'));
+    });
+    await expect(bannerTagline).toHaveClass(/is-visible/);
+    await expect(bannerTagline).toHaveCSS('animation-name', 'tagline-sequence');
+    await expect(bannerTagline).toHaveCSS('animation-duration', '2.3s');
+    const scrollYBeforeTaglineFade = await page.evaluate(() => window.scrollY);
+    await bannerTagline.evaluate((tagline) => tagline.getAnimations()[0].finish());
+    await expect(bannerTagline).toHaveCSS('opacity', '0');
+    await expect(page.locator('.hero')).toHaveClass(/is-presented/);
+    await expect(page.locator('.hero')).toHaveCSS('position', 'sticky');
+    await expect(page.locator('.hero')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(scrollYBeforeTaglineFade);
+    const mastheadHeight = await page.locator('.masthead').evaluate((masthead) =>
+      masthead.getBoundingClientRect().height
+    );
+    await expect.poll(() =>
+      page.locator('.hero').evaluate((hero) => hero.getBoundingClientRect().top)
+    ).toBeCloseTo(mastheadHeight, 0);
     expect(overlayBounds).toMatchObject({
       x: videoBounds.x,
       y: videoBounds.y,
@@ -81,11 +100,13 @@ test.describe('homepage', () => {
     const partnerCta = page.locator('.hero-ctas [data-modal="partner"]');
     await expect(partnerCta).toHaveCSS('background-color', 'rgb(255, 255, 255)');
     await expect(partnerCta).toHaveCSS('opacity', '1');
-    const bannerTop = await page.locator('.hero-banner').evaluate((banner) => banner.getBoundingClientRect().top);
-    await page.evaluate(() => window.scrollTo(0, 250));
+    await expect(page.locator('.hero-banner')).toHaveCSS('position', 'sticky');
+    const scrollYBeforeDownwardScroll = await page.evaluate(() => window.scrollY);
+    await page.evaluate(() => window.scrollBy(0, 100));
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(scrollYBeforeDownwardScroll);
     await expect.poll(() =>
-      page.locator('.hero-banner').evaluate((banner) => banner.getBoundingClientRect().top)
-    ).toBeCloseTo(bannerTop, 0);
+      page.locator('.hero').evaluate((hero) => hero.getBoundingClientRect().top)
+    ).toBeCloseTo(mastheadHeight, 0);
     await expect(page.locator('.explore-card')).toHaveCount(0);
     await expect(page.locator('.cta-band h2')).toHaveText('See how DARA Telecom fits a specific network or site');
     await expect(page.locator('main > section')).toHaveCount(2);
@@ -93,7 +114,7 @@ test.describe('homepage', () => {
     await expect(page.locator('.footer-brand .brand-logo-dark')).toHaveAttribute('src', /WhiteBlueOnBlack\.png$/);
     await expect(page.locator('.footer-brand .brand-logo-light')).toHaveCSS('height', '42px');
     await expect(page.locator('.footer-brand .brand-logo-dark')).toHaveCSS('height', '42px');
-    await expect(page.locator('.site-footer')).toHaveCSS('background-color', 'rgba(255, 255, 255, 0.8)');
+    await expect(page.locator('.site-footer')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
     await expect(page.locator('.footer-brand .brand-logo-light')).toHaveAttribute('alt', 'DARA Telecom');
     const linkedInLink = page.locator('.footer-social-link');
     await expect(linkedInLink).toHaveAttribute('href', 'https://www.linkedin.com/company/dara-telecom/');
@@ -140,13 +161,13 @@ test.describe('homepage', () => {
   });
 
   test('uses the full content width for offer cards on desktop and mobile', async ({ page }) => {
-    const grid = page.locator('.offer-grid');
+    const grid = page.locator('.hero-offerings .solutions-grid');
     const getGridWidthRatio = () => page.locator('.hero-offerings').evaluate((container) => {
       const style = getComputedStyle(container);
       const contentWidth = container.clientWidth
         - parseFloat(style.paddingLeft)
         - parseFloat(style.paddingRight);
-      return container.querySelector('.offer-grid').getBoundingClientRect().width / contentWidth;
+      return container.querySelector('.solutions-grid').getBoundingClientRect().width / contentWidth;
     });
 
     await page.setViewportSize({ width: 1365, height: 768 });
@@ -159,15 +180,22 @@ test.describe('homepage', () => {
     expect(await getGridWidthRatio()).toBeCloseTo(1, 2);
   });
 
-  test('keeps desktop offer cards compact in height without cropping their images', async ({ page }) => {
+  test('sizes homepage card images to their natural proportions', async ({ page }) => {
     await page.setViewportSize({ width: 1365, height: 900 });
 
-    const cards = page.locator('.offer-card');
+    const cards = page.locator('.hero-offerings .solutions-card');
     for (const card of await cards.all()) {
-      const image = card.locator('.offer-card-image');
+      const image = card.locator('.solutions-photo');
       await expect(image).toHaveCSS('object-fit', 'contain');
-      expect(await image.evaluate((element) => element.getBoundingClientRect().height)).toBeLessThanOrEqual(144);
-      expect(await card.evaluate((element) => element.getBoundingClientRect().height)).toBeLessThan(300);
+      const dimensions = await image.evaluate((element) => {
+        const bounds = element.getBoundingClientRect();
+        return {
+          renderedRatio: bounds.width / bounds.height,
+          naturalRatio: element.naturalWidth / element.naturalHeight
+        };
+      });
+      expect(dimensions.renderedRatio).toBeCloseTo(dimensions.naturalRatio, 2);
+      await expect(card).toHaveCSS('border-radius', '18px');
     }
   });
 

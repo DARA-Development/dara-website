@@ -157,13 +157,34 @@
 	.hero-banner { position: relative; overflow: hidden; }
 	.hero-banner video { display: block; width: 100%; height: auto; }
 	.hero-banner-blue-overlay { position: absolute; inset: 0; z-index: 1; background: rgb(11 61 145 / 40%); pointer-events: none; }
+	.hero-banner-tagline { position: absolute; inset: 0; z-index: 2; display: grid; place-items: center; padding: 0 20px; opacity: 0; pointer-events: none; text-align: center; }
+	.hero-banner-tagline p { margin: 0; color: #fff; font-size: clamp(32px, 6vw, 76px); font-weight: 800; letter-spacing: -0.04em; line-height: 1.05; text-shadow: 0 2px 18px rgb(0 0 0 / 45%); }
+	.hero-banner-tagline.is-visible { animation: tagline-sequence 2.3s ease-out both; }
+	@keyframes tagline-sequence {
+		0% { opacity: 0; transform: translateY(20px) scale(0.97); }
+		15% { opacity: 1; transform: translateY(0) scale(1); }
+		60% { opacity: 1; transform: translateY(0) scale(1); }
+		100% { opacity: 0; transform: translateY(-10px); }
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.hero-banner-tagline.is-visible { animation-name: tagline-fade; }
+		@keyframes tagline-fade {
+			0%, 15% { opacity: 0; }
+			30%, 60% { opacity: 1; }
+			100% { opacity: 0; }
+		}
+	}
 	.video-home .hero-banner { position: sticky; top: var(--masthead-height, 0px); z-index: 0; }
-	.video-home .hero { background: transparent; }
+	.video-home .hero { position: sticky; top: var(--masthead-height, 0px); z-index: 1; margin-top: 0; background: transparent; transition: margin-top 900ms cubic-bezier(0.2, 0.7, 0.2, 1); }
+	.video-home .hero.is-presented { margin-top: calc(-1 * var(--hero-banner-height, 0px)); background: transparent; }
+	@media (prefers-reduced-motion: reduce) {
+		.video-home .hero { transition: none; }
+	}
 	.video-home .hero-offerings,
 	.video-home .cta-band,
 	.video-home .site-footer { position: relative; z-index: 1; }
 	.video-home .hero-ctas [data-modal="partner"] { background: #fff; border-color: #fff; color: #10151C; opacity: 1; }
-	.video-home .site-footer { background: rgb(255 255 255 / 80%); }
+	.video-home .site-footer { background: var(--bg); }
 	.hero-banner-fx { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 	.fx-ring { fill: none; stroke: #9fd8ff; stroke-width: 1.5; opacity: 0; transform-box: fill-box; transform-origin: center; animation: fx-pulse 3s ease-out infinite; }
 	.fx-ring-warm { stroke: #ffd591; }
@@ -176,8 +197,7 @@
 	@media (prefers-reduced-motion: reduce) { .hero-banner-fx { display: none; } }
 	.hero .wrap { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 56px; align-items: center; padding-top: 72px; padding-bottom: 64px; }
 	.hero .hero-offerings { display: block; padding-top: 56px; padding-bottom: 56px; }
-	.hero-offerings h1 { margin-bottom: 36px; color: #000; font-size: 90px; line-height: 1.1; text-align: center; }
-	:root[data-theme="dark"] .hero-offerings h1 { color: #fff; }
+	.hero-offerings .solutions-photo { height: auto; aspect-ratio: auto; object-fit: contain; }
 	.offer-grid { display: grid; width: 100%; margin-inline: auto; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; }
 	.offer-card {
 		display: flex; flex-direction: column; justify-content: center; align-items: center;
@@ -455,7 +475,6 @@
 		.solutions-grid { grid-template-columns: 1fr; }
 		.story.reverse .wrap { direction: ltr; }
 		.hero h1 { font-size: 32px; }
-		.hero-offerings h1 { font-size: 40px; }
 		.stat-strip .wrap { grid-template-columns: repeat(2, 1fr); gap: 20px 0; }
 		.stat-cell:nth-child(3) { border-left: none; padding-left: 0; }
 		.explore-grid { grid-template-columns: 1fr 1fr; }
@@ -469,7 +488,6 @@
 	}
 	@media (max-width: 600px) {
 		.hero .hero-offerings { padding-top: 28px; padding-bottom: 36px; }
-		.hero-offerings h1 { margin-bottom: 20px; font-size: 30px; }
 		.offer-grid { gap: 12px; }
 		.offer-card { flex-direction: row; align-items: center; gap: 14px; padding: 12px; text-align: left; }
 		.offer-card-image { width: 92px; height: 92px; flex: 0 0 92px; border-radius: 8px; object-fit: cover; }
@@ -495,7 +513,6 @@
 	@media (min-width: 981px) and (max-height: 850px) {
 		.hero-banner img { height: 15vh; object-fit: cover; }
 		.hero .hero-offerings { padding-top: 16px; padding-bottom: 16px; }
-		.hero-offerings h1 { margin-bottom: 12px; font-size: clamp(38px, 6vh, 52px); }
 		.offer-grid { gap: 16px; }
 		.offer-card-image { height: clamp(48px, 7.5vh, 63px); aspect-ratio: auto; object-fit: contain; }
 		.offer-card-content { padding: 5px 7px 6px; }
