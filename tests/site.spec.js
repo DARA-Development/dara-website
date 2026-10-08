@@ -327,6 +327,51 @@ test('keeps the shared pages free of horizontal overflow at responsive widths', 
           `About us team photos should fit at ${width}px`
         ).toBe(true);
       }
+
+      if (path === '/' && width <= 390) {
+        const mobileHeroLayout = await page.evaluate(() => {
+          const banner = document.querySelector('.hero-banner');
+          const tagline = document.querySelector('.hero-banner-tagline');
+          const copy = document.querySelector('.hero-sequence-copy');
+          const logo = document.querySelector('.hero-sequence-logo');
+          const nav = document.querySelector('.hero-nav-links');
+          const ctas = document.querySelector('.hero-ctas');
+          const bounds = (element) => {
+            const { top, right, bottom, left } = element.getBoundingClientRect();
+            return { top, right, bottom, left };
+          };
+          const overlaps = (first, second) =>
+            first.left < second.right && first.right > second.left &&
+            first.top < second.bottom && first.bottom > second.top;
+
+          tagline.classList.add('is-active');
+          copy.classList.add('is-current');
+          banner.classList.add('is-presented');
+          copy.querySelector('h1').textContent = 'Achieve Boundless Connectivity';
+          copy.querySelector('p').textContent =
+            'Close coverage gaps. Prepare for what is next. Capture real-world terrestrial and satellite coverage.';
+
+          const navBounds = bounds(nav);
+          const copyBounds = bounds(copy);
+          const ctaBounds = bounds(ctas);
+          logo.classList.add('is-visible');
+          const logoBounds = bounds(logo);
+
+          return {
+            navAndCopyOverlap: overlaps(navBounds, copyBounds),
+            copyAndCtasOverlap: overlaps(copyBounds, ctaBounds),
+            navAndLogoOverlap: overlaps(navBounds, logoBounds),
+            logoAndCtasOverlap: overlaps(logoBounds, ctaBounds)
+          };
+        });
+
+        expect(mobileHeroLayout).toEqual({
+          navAndCopyOverlap: false,
+          copyAndCtasOverlap: false,
+          navAndLogoOverlap: false,
+          logoAndCtasOverlap: false
+        });
+      }
     }
   }
 });
