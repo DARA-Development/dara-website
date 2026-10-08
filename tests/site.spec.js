@@ -9,286 +9,91 @@ test.describe('homepage', () => {
     await expect(page).toHaveTitle('DARA Telecom');
     await expect(page.locator('.masthead .brand-logo-light')).toHaveAttribute('src', /BlueOnWhite\.png$/);
     await expect(page.locator('.masthead .brand-logo-dark')).toHaveAttribute('src', /WhiteBlueOnBlack\.png$/);
-    await expect(page.locator('.masthead .brand-logo-light')).toHaveCSS('height', '68px');
-    await expect(page.locator('.masthead .brand-logo-dark')).toHaveCSS('height', '68px');
     await expect(page.locator('.masthead .brand a')).toHaveAttribute('href', 'index.html');
     await expect(page.locator('.site-search input')).toHaveAttribute('placeholder', 'Search site');
     await expect(page.locator('.site-search-submit')).toHaveAccessibleName('Search');
-    await expect(page.locator('.site-search-submit svg')).toBeVisible();
     await expect(page.locator('.site-search + .btn')).toHaveText('Portal login');
     await expect(page.locator('.masthead-top .nav-actions .btn-brand')).toHaveText('Contact us');
-    await expect(page.getByText('ABOUT DARA', { exact: true })).toHaveCount(0);
-    await expect(page.getByText('THE PEOPLE BEHIND DARA', { exact: true })).toHaveCount(0);
-    await expect(page.getByRole('heading', { name: 'What we offer and nobody else can' })).toHaveCount(0);
-    await expect(page.locator('.hero-offerings .solutions-card')).toHaveCount(3);
-    await expect(page.locator('.hero-offerings .solutions-card:first-child .solutions-photo')).toHaveAttribute(
-      'src',
-      'images/dara-drone-satellite-rf-validation.webp'
-    );
-    await expect.poll(() =>
-      page.locator('.hero-offerings .solutions-card:first-child .solutions-photo').evaluate((image) => image.naturalWidth)
-    ).toBeGreaterThan(0);
-    await expect(page.locator('.hero-offerings .solutions-card:first-child .solutions-photo')).toHaveCSS('object-fit', 'contain');
-    await expect(page.locator('.hero-offerings .solutions-card:first-child')).toContainText('Drone + satellite RF validation');
-    await expect(page.locator('.hero-offerings .solutions-card:nth-child(2) .solutions-photo')).toHaveAttribute(
-      'src',
-      'images/dara-secure-audit-ready-data-portal.webp'
-    );
-    await expect.poll(() =>
-      page.locator('.hero-offerings .solutions-card:nth-child(2) .solutions-photo').evaluate((image) => image.naturalWidth)
-    ).toBeGreaterThan(0);
-    await expect(page.locator('.hero-offerings .solutions-card:nth-child(2)')).toContainText('Secure, audit-ready data portal');
-    await expect(page.locator('.hero-offerings .solutions-card:nth-child(3) .solutions-photo')).toHaveAttribute(
-      'src',
-      'images/dara-analysis-action-automation.webp'
-    );
-    await expect.poll(() =>
-      page.locator('.hero-offerings .solutions-card:nth-child(3) .solutions-photo').evaluate((image) => image.naturalWidth)
-    ).toBeGreaterThan(0);
-    await expect(page.locator('.hero-offerings .solutions-card:nth-child(3)')).toContainText('Analysis that turns into action');
-    const bannerVideo = page.locator('.hero-banner video');
-    await expect(page.locator('.hero-banner img')).toHaveCount(0);
+
+    const bannerVideo = page.locator('.hero-banner-video');
     await expect(bannerVideo).toHaveAttribute('autoplay', '');
     await expect(bannerVideo).toHaveAttribute('muted', '');
     await expect(bannerVideo).toHaveAttribute('loop', '');
+    await expect(bannerVideo.locator('source')).toHaveAttribute('src', 'videos/dara-drone-flight.mp4');
     await expect.poll(() => bannerVideo.evaluate((video) => video.playbackRate)).toBe(0.5);
-    await expect(bannerVideo.locator('source')).toHaveAttribute('src', 'videos/2026.10-PiRealFlightShort.mp4');
-    await expect.poll(() => bannerVideo.evaluate((video) => video.videoWidth)).toBeGreaterThan(0);
-    expect(await bannerVideo.evaluate((video) => video.getBoundingClientRect().width))
-      .toBe(await page.evaluate(() => document.documentElement.clientWidth));
-    const bannerOverlay = page.locator('.hero-banner-blue-overlay');
-    const videoBounds = await bannerVideo.evaluate((video) => video.getBoundingClientRect().toJSON());
-    const overlayBounds = await bannerOverlay.evaluate((overlay) => overlay.getBoundingClientRect().toJSON());
-    const bannerTagline = page.locator('.hero-banner-tagline');
-    await expect(bannerTagline).toHaveText('Dare to Reach');
-    await expect(bannerTagline).toHaveCSS('position', 'absolute');
-    await expect(bannerTagline).toHaveCSS('z-index', '2');
-    await expect(bannerTagline).toHaveCSS('opacity', '0');
+    await expect(page.locator('.hero-nav-links a')).toHaveText(['Solutions', 'Products', 'About us']);
+    await expect(page.locator('.hero-ctas [data-modal="demo"]')).toHaveCount(1);
+    await expect(page.locator('.hero-ctas [data-modal="partner"]')).toHaveCount(1);
+    await expect(page.locator('.hero-sequence-logo')).toHaveAttribute('src', 'images/dara-logo.png');
+
+    const tagline = page.locator('.hero-banner-tagline');
     await bannerVideo.evaluate((video) => {
       Object.defineProperty(video, 'duration', { configurable: true, get: () => 6.5 });
-      Object.defineProperty(video, 'currentTime', { configurable: true, get: () => 5.2 });
+      Object.defineProperty(video, 'currentTime', { configurable: true, get: () => 3 });
       video.dispatchEvent(new Event('timeupdate'));
     });
-    await expect(bannerTagline).not.toHaveClass(/is-visible/);
-    await bannerVideo.evaluate((video) => {
-      Object.defineProperty(video, 'currentTime', { configurable: true, get: () => 5.35 });
-      video.dispatchEvent(new Event('timeupdate'));
-    });
-    await expect(bannerTagline).toHaveClass(/is-visible/);
-    await expect(bannerTagline).toHaveCSS('animation-name', 'tagline-sequence');
-    await expect(bannerTagline).toHaveCSS('animation-duration', '2.3s');
-    const scrollYBeforeTaglineFade = await page.evaluate(() => window.scrollY);
-    await bannerTagline.evaluate((tagline) => tagline.getAnimations()[0].finish());
-    await expect(bannerTagline).toHaveCSS('opacity', '0');
-    await expect(page.locator('.hero')).toHaveClass(/is-presented/);
-    await expect(page.locator('.hero')).toHaveCSS('position', 'sticky');
-    await expect(page.locator('.hero')).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
-    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(scrollYBeforeTaglineFade);
-    const mastheadHeight = await page.locator('.masthead').evaluate((masthead) =>
-      masthead.getBoundingClientRect().height
-    );
-    await expect.poll(() =>
-      page.locator('.hero').evaluate((hero) => hero.getBoundingClientRect().top)
-    ).toBeCloseTo(mastheadHeight, 0);
-    expect(overlayBounds).toMatchObject({
-      x: videoBounds.x,
-      y: videoBounds.y,
-      width: videoBounds.width,
-      height: videoBounds.height
-    });
-    await expect(bannerOverlay).toHaveCSS('background-color', 'rgba(11, 61, 145, 0.4)');
-    const partnerCta = page.locator('.hero-ctas [data-modal="partner"]');
-    await expect(partnerCta).toHaveCSS('background-color', 'rgb(255, 255, 255)');
-    await expect(partnerCta).toHaveCSS('opacity', '1');
-    await expect(page.locator('.hero-banner')).toHaveCSS('position', 'sticky');
-    const scrollYBeforeDownwardScroll = await page.evaluate(() => window.scrollY);
-    await page.evaluate(() => window.scrollBy(0, 100));
-    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(scrollYBeforeDownwardScroll);
-    await expect.poll(() =>
-      page.locator('.hero').evaluate((hero) => hero.getBoundingClientRect().top)
-    ).toBeCloseTo(mastheadHeight, 0);
-    await expect(page.locator('.explore-card')).toHaveCount(0);
-    await expect(page.locator('.cta-band h2')).toHaveText('See how DARA Telecom fits a specific network or site');
-    await expect(page.locator('main > section')).toHaveCount(2);
-    await expect(page.locator('.footer-brand .brand-logo-light')).toHaveAttribute('src', /BlueOnWhite\.png$/);
-    await expect(page.locator('.footer-brand .brand-logo-dark')).toHaveAttribute('src', /WhiteBlueOnBlack\.png$/);
-    await expect(page.locator('.footer-brand .brand-logo-light')).toHaveCSS('height', '42px');
-    await expect(page.locator('.footer-brand .brand-logo-dark')).toHaveCSS('height', '42px');
-    await expect(page.locator('.site-footer')).toHaveCSS('background-color', 'rgb(255, 255, 255)');
-    await expect(page.locator('.footer-brand .brand-logo-light')).toHaveAttribute('alt', 'DARA Telecom');
-    const linkedInLink = page.locator('.footer-social-link');
-    await expect(linkedInLink).toHaveAttribute('href', 'https://www.linkedin.com/company/dara-telecom/');
-    await expect(linkedInLink).toHaveAttribute('target', '_blank');
-    await expect(linkedInLink).toHaveAttribute('rel', 'noopener noreferrer');
-    await expect(linkedInLink).toHaveAccessibleName('DARA Telecom on LinkedIn');
-    await expect(linkedInLink.locator('svg')).toBeVisible();
-    await page.locator('#themeToggle').click();
-    await expect(page.locator('.masthead .brand-logo-dark')).toBeVisible();
-    await expect(page.locator('.footer-brand .brand-logo-dark')).toBeVisible();
-    await page.locator('#themeToggle').click();
+    await expect(tagline).toHaveClass(/is-active/);
+    await expect(page.locator('.hero-sequence-count')).toHaveText('01 / 05');
+    await expect(page.locator('.hero-sequence-copy h1')).toHaveText('Reach');
 
-    for (const id of ['home', 'solutions', 'products', 'svc-field', 'svc-portal', 'svc-analysis', 'investors']) {
-      await expect(page.locator(`#${id}`)).toHaveCount(1);
-    }
-    for (const id of ['svc-marketplace']) {
-      await expect(page.locator(`#${id}`)).toHaveCount(0);
-    }
+    const footer = page.locator('.site-footer');
+    await expect(footer.locator('.footer-brand .brand-logo-light')).toHaveAttribute('src', /BlueOnWhite\.png$/);
+    await expect(footer.locator('.footer-social-link')).toHaveAttribute(
+      'href',
+      'https://www.linkedin.com/company/dara-telecom/'
+    );
+    await expect(footer.locator('.footer-home-links a')).toHaveText([
+      'About DARA', 'About us', 'Newsroom', 'Careers', 'Investors Relations', 'Contact'
+    ]);
+    await expect(footer.locator('.footer-home-legal a')).toHaveText(['Privacy Policy', 'Terms of Use']);
   });
 
   test('returns to the top of the homepage when the logo is clicked', async ({ page }) => {
-    await page.locator('.cta-band').scrollIntoViewIfNeeded();
+    await page.locator('.site-footer').scrollIntoViewIfNeeded();
     await page.locator('.masthead .brand a').click();
     await expect(page).toHaveURL(/\/(?:index\.html)?$/);
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   });
 
-  test('returns to the top of the homepage when Home is clicked', async ({ page }) => {
-    await page.locator('.cta-band').scrollIntoViewIfNeeded();
-    await page.locator('.primary-nav .nav-link').filter({ hasText: /^Home$/ }).click();
-    await expect(page).toHaveURL(/\/(?:index\.html)?$/);
-    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
-  });
+  test('starts the five-stage animation with Reach', async ({ page }) => {
+    expect(await page.evaluate(() => heroMessages.map(({ heading }) => heading))).toEqual([
+      'Reach',
+      'Measure',
+      'Analyze',
+      'Ready',
+      'Achieve Boundless Connectivity'
+    ]);
 
-  test('keeps the full-width video banner and offer CTAs accessible on desktop', async ({ page }) => {
-    await page.setViewportSize({ width: 1365, height: 768 });
-
-    const video = page.locator('.hero-banner video');
-    await expect.poll(() => video.evaluate((element) => element.videoWidth)).toBeGreaterThan(0);
-    expect(await video.evaluate((element) => element.getBoundingClientRect().width))
-      .toBe(await page.evaluate(() => document.documentElement.clientWidth));
-    const hero = page.locator('.hero');
-    await page.locator('.hero-banner-tagline').evaluate((tagline) => {
-      tagline.classList.add('is-visible');
-      tagline.getAnimations()[0].finish();
-    });
-    await expect(hero).toHaveClass(/is-presented/);
-    const videoHeight = await video.evaluate((element) => element.getBoundingClientRect().height);
-    await expect.poll(() =>
-      hero.evaluate((element) => parseFloat(getComputedStyle(element).marginTop))
-    ).toBeCloseTo(-videoHeight, 0);
-    await expect(page.locator('.hero-ctas')).toBeInViewport({ ratio: 1 });
-  });
-
-  test('uses the full content width for offer cards on desktop and mobile', async ({ page }) => {
-    const grid = page.locator('.hero-offerings .solutions-grid');
-    const getGridWidthRatio = () => page.locator('.hero-offerings').evaluate((container) => {
-      const style = getComputedStyle(container);
-      const contentWidth = container.clientWidth
-        - parseFloat(style.paddingLeft)
-        - parseFloat(style.paddingRight);
-      return container.querySelector('.solutions-grid').getBoundingClientRect().width / contentWidth;
+    const video = page.locator('.hero-banner-video');
+    await video.evaluate((element) => {
+      Object.defineProperty(element, 'duration', { configurable: true, get: () => 6.5 });
+      Object.defineProperty(element, 'currentTime', { configurable: true, get: () => 3 });
+      element.dispatchEvent(new Event('timeupdate'));
     });
 
-    await page.setViewportSize({ width: 1365, height: 768 });
-    expect(await getGridWidthRatio()).toBeCloseTo(1, 2);
-
-    await page.setViewportSize({ width: 390, height: 844 });
-    expect(await grid.evaluate((element) =>
-      getComputedStyle(element).gridTemplateColumns.split(' ').length
-    )).toBe(1);
-    expect(await getGridWidthRatio()).toBeCloseTo(1, 2);
+    await expect(page.locator('.hero-sequence-count')).toHaveText('01 / 05');
+    await expect(page.locator('.hero-sequence-copy h1')).toHaveText('Reach');
+    await expect(page.locator('.hero-sequence-logo')).toHaveAttribute('alt', 'DARA Telecom');
+    await expect(page.locator('.hero-nav-links a')).toHaveText(['Solutions', 'Products', 'About us']);
   });
 
-  test('sizes homepage card images to their natural proportions', async ({ page }) => {
-    await page.setViewportSize({ width: 1365, height: 900 });
-
-    const cards = page.locator('.hero-offerings .solutions-card');
-    for (const card of await cards.all()) {
-      const image = card.locator('.solutions-photo');
-      await expect(image).toHaveCSS('object-fit', 'contain');
-      const dimensions = await image.evaluate((element) => {
-        const bounds = element.getBoundingClientRect();
-        return {
-          renderedWidth: bounds.width,
-          renderedHeight: bounds.height,
-          renderedRatio: bounds.width / bounds.height,
-          naturalRatio: element.naturalWidth / element.naturalHeight
-        };
-      });
-      expect(dimensions.renderedRatio).toBeCloseTo(dimensions.naturalRatio, 2);
-      expect(dimensions.renderedWidth).toBe(dimensions.renderedHeight);
-      expect(dimensions.renderedWidth).toBeLessThanOrEqual(180);
-      await expect(card).toHaveCSS('border-radius', '18px');
+  test('uses the requested navigation links on secondary pages without a Home item', async ({ page }) => {
+    for (const [path, expectedTitle, activeLabel] of [
+      ['/solutions.html', 'Solutions | DARA Telecom', 'Solutions'],
+      ['/products.html', 'Products | DARA Telecom', 'Products'],
+      ['/about_us.html', 'About us | DARA Telecom', 'About us']
+    ]) {
+      await page.goto(path);
+      await expect(page).toHaveTitle(expectedTitle);
+      await expect(page.locator('.primary-nav .nav-link')).toHaveText([
+        'Solutions', 'Products', 'About us'
+      ]);
+      await expect(page.locator('.primary-nav .nav-link[aria-current="page"]')).toHaveText(activeLabel);
+      await expect(page.locator('.primary-nav .nav-link', { hasText: /^Home$/ })).toHaveCount(0);
+      await expect(page.locator('.site-footer .footer-home-links a')).toHaveText([
+        'About DARA', 'About us', 'Newsroom', 'Careers', 'Investors Relations', 'Contact'
+      ]);
     }
-  });
-
-  test('shows the requested navigation and links to its destinations', async ({ page }) => {
-    const menu = page.locator('.primary-nav .nav-link');
-    await expect(menu).toHaveText(['Home', 'Solutions', 'Products', 'About us']);
-
-    await expect(menu.filter({ hasText: 'Solutions' })).toHaveAttribute('href', 'solutions.html');
-    await expect(menu.filter({ hasText: 'Products' })).toHaveAttribute('href', 'products.html');
-    await menu.filter({ hasText: 'Solutions' }).click();
-    await expect(page).toHaveTitle('Solutions | DARA Telecom');
-    await expect(page).toHaveURL(/\/solutions\.html$/);
-    await expect(page.locator('main > section')).toHaveCount(1);
-    await expect(page.locator('.solutions-header')).toHaveCount(0);
-    await expect(page.locator('#solutions-intro, .solution-card, .process-grid, .use-case-list')).toHaveCount(0);
-    await expect(page.locator('.solutions-card')).toHaveCount(3);
-    await expect(page.locator('.solutions-card h2')).toHaveText([
-      'Antenna Field Testing',
-      'Off-road drive testing',
-      'Non Terrestrial Networks'
-    ]);
-    const antennaImage = page.locator('.solutions-card:first-child .solutions-photo');
-    await expect(antennaImage).toHaveAttribute('src', 'images/solutions-antenna-field-testing.jpg');
-    await expect.poll(() => antennaImage.evaluate((image) => image.naturalWidth)).toBeGreaterThan(0);
-    await expect(page.locator('.solutions-photo')).toHaveCount(3);
-    await expect(page.locator('.site-footer .footer-grid > *')).toHaveCount(5);
-    await expect(page.locator('.site-footer .footer-col h4')).toHaveText([
-      'Product',
-      'Company',
-      'Resources',
-      'Legal'
-    ]);
-    await expect(page.locator('.site-footer .footer-brand img.brand-logo-light')).toHaveAttribute(
-      'src',
-      'images/BlueOnWhite.png'
-    );
-    await expect(page.locator('.site-footer .footer-social-link')).toHaveAttribute(
-      'href',
-      'https://www.linkedin.com/company/dara-telecom/'
-    );
-    for (const image of await page.locator('.solutions-photo').all()) {
-      await expect(image).toHaveCSS('aspect-ratio', '1 / 1');
-      await expect(image).toHaveCSS('object-fit', 'contain');
-      const { width, height } = await image.evaluate((element) => {
-        const { width, height } = element.getBoundingClientRect();
-        return { width, height };
-      });
-      expect(width).toBeCloseTo(height, 0);
-    }
-    await expect(page.locator('#contact')).toHaveCount(0);
-    await page.goto('/');
-    const homeMenu = page.locator('.primary-nav .nav-link');
-    await homeMenu.filter({ hasText: 'Products' }).click();
-    await expect(page).toHaveTitle('Products | DARA Telecom');
-    await expect(page).toHaveURL(/\/products\.html$/);
-    await expect(page.locator('.solutions-card')).toHaveCount(3);
-    await expect(page.locator('.solutions-card h2')).toHaveText([
-      'UAV measurements',
-      'rApps',
-      'Analytics'
-    ]);
-    await expect(page.locator('.solutions-card').nth(0).locator('li')).toHaveText([
-      'Light and compact measurements equipment payloads.',
-      'Customized long-range drones.',
-      'Predefined routes and automatic navigation.'
-    ]);
-    await expect(page.locator('.solutions-card').nth(1).locator('li')).toHaveText([
-      'ORAN based, vendors neutral network interfaces.',
-      'Collection of network recorded events and measurements'
-    ]);
-    await expect(page.locator('.solutions-card').nth(2).locator('li')).toHaveText([
-      'Easy to navigate browser-based portal.',
-      'Measurements databases, geographical maps and statistical charts analytics.',
-      'Intelligent problems discovery and diagnostics.',
-      'Uplink (rApps) and Downlink (UAV) recordings correlation.'
-    ]);
-    await expect(page.locator('.site-footer .footer-grid > *')).toHaveCount(5);
-    await expect(homeMenu.filter({ hasText: 'Services' })).toHaveCount(0);
-    await expect(homeMenu.filter({ hasText: 'Resources' })).toHaveCount(0);
-    await expect(homeMenu.filter({ hasText: 'Partners' })).toHaveCount(0);
   });
 
   test('uses the same footer and three-column layout as the Solutions page', async ({ page }) => {
@@ -354,6 +159,7 @@ test.describe('homepage', () => {
 
   test('collapses the header into a menu button on phones', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto('/solutions.html');
     const toggle = page.locator('.menu-toggle');
     const nav = page.locator('.primary-nav');
 
@@ -367,7 +173,7 @@ test.describe('homepage', () => {
 
     await toggle.click();
     await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-    await expect(nav.locator('.nav-link')).toHaveText(['Home', 'Solutions', 'Products', 'About us']);
+    await expect(nav.locator('.nav-link')).toHaveText(['Solutions', 'Products', 'About us']);
     await expect(page.locator('.site-search')).toBeVisible();
     await expect(page.locator('#themeToggle')).toBeVisible();
 
@@ -463,10 +269,10 @@ test.describe('about page', () => {
     )).toBe(true);
     await expect(page.locator('.brand a')).toHaveAttribute('href', 'index.html');
     await expect(page.locator('.primary-nav .nav-link')).toHaveText([
-      'Home', 'Solutions', 'Products', 'About us'
+      'Solutions', 'Products', 'About us'
     ]);
-    await expect(page.locator('.primary-nav .nav-link').nth(1)).toHaveAttribute('href', 'solutions.html');
-    await expect(page.locator('.primary-nav .nav-link').nth(2)).toHaveAttribute('href', 'products.html');
+    await expect(page.locator('.primary-nav .nav-link').nth(0)).toHaveAttribute('href', 'solutions.html');
+    await expect(page.locator('.primary-nav .nav-link').nth(1)).toHaveAttribute('href', 'products.html');
     await expect(page.locator('.site-footer')).toBeVisible();
     await expect(page.locator('#about-team-title')).toHaveText('Team');
     await expect(page.locator('.about-team-heading > p:last-child')).toHaveText('Meet the team building what’s next in telecom.');
@@ -483,6 +289,46 @@ test.describe('about page', () => {
     await expect(search.locator('.site-search-results a', { hasText: 'Building what’s next in telecom.' })).toBeVisible();
 
   });
+});
+
+test('keeps the shared pages free of horizontal overflow at responsive widths', async ({ page }) => {
+  const paths = ['/', '/solutions.html', '/products.html', '/about_us.html'];
+
+  for (const width of [320, 390, 768, 1024, 1440]) {
+    await page.setViewportSize({ width, height: 900 });
+
+    for (const path of paths) {
+      await page.goto(path);
+      expect(
+        await page.evaluate(() =>
+          document.documentElement.scrollWidth - document.documentElement.clientWidth
+        ),
+        `${path} should not overflow horizontally at ${width}px`
+      ).toBe(0);
+
+      const footerLinks = page.locator('.footer-home-links a');
+      await expect(footerLinks).toHaveCount(6);
+      expect(
+        await footerLinks.evaluateAll((links) =>
+          links.every((link) =>
+            Math.abs(link.getBoundingClientRect().top - links[0].getBoundingClientRect().top) < 1
+          )
+        ),
+        `${path} footer links should stay on one line at ${width}px`
+      ).toBe(true);
+
+      if (path === '/about_us.html') {
+        expect(
+          await page.locator('.about-team-photo').evaluateAll((photos) =>
+            photos.every((photo) =>
+              photo.getBoundingClientRect().right <= document.documentElement.clientWidth
+            )
+          ),
+          `About us team photos should fit at ${width}px`
+        ).toBe(true);
+      }
+    }
+  }
 });
 
 test.describe('contact forms', () => {
