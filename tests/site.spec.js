@@ -230,6 +230,9 @@ test.describe('homepage', () => {
       'Off-road drive testing',
       'Non Terrestrial Networks'
     ]);
+    const antennaImage = page.locator('.solutions-card:first-child .solutions-photo');
+    await expect(antennaImage).toHaveAttribute('src', 'images/solutions-antenna-field-testing.jpg');
+    await expect.poll(() => antennaImage.evaluate((image) => image.naturalWidth)).toBeGreaterThan(0);
     await expect(page.locator('.solutions-photo')).toHaveCount(3);
     await expect(page.locator('.site-footer .footer-grid > *')).toHaveCount(5);
     await expect(page.locator('.site-footer .footer-col h4')).toHaveText([
@@ -261,13 +264,75 @@ test.describe('homepage', () => {
     await homeMenu.filter({ hasText: 'Products' }).click();
     await expect(page).toHaveTitle('Products | DARA Telecom');
     await expect(page).toHaveURL(/\/products\.html$/);
-    expect(await page.locator('.solutions-content-space').evaluate((element) =>
-      element.getBoundingClientRect().height
-    )).toBeGreaterThanOrEqual(await page.evaluate(() => window.innerHeight));
-    await expect(page.locator('#contact h2')).toHaveText('Start with your product needs');
+    await expect(page.locator('.solutions-card')).toHaveCount(3);
+    await expect(page.locator('.solutions-card h2')).toHaveText([
+      'UAV measurements',
+      'rApps',
+      'Analytics'
+    ]);
+    await expect(page.locator('.solutions-card').nth(0).locator('li')).toHaveText([
+      'Light and compact measurements equipment payloads.',
+      'Customized long-range drones.',
+      'Predefined routes and automatic navigation.'
+    ]);
+    await expect(page.locator('.solutions-card').nth(1).locator('li')).toHaveText([
+      'ORAN based, vendors neutral network interfaces.',
+      'Collection of network recorded events and measurements'
+    ]);
+    await expect(page.locator('.solutions-card').nth(2).locator('li')).toHaveText([
+      'Easy to navigate browser-based portal.',
+      'Measurements databases, geographical maps and statistical charts analytics.',
+      'Intelligent problems discovery and diagnostics.',
+      'Uplink (rApps) and Downlink (UAV) recordings correlation.'
+    ]);
+    await expect(page.locator('.site-footer .footer-grid > *')).toHaveCount(5);
     await expect(homeMenu.filter({ hasText: 'Services' })).toHaveCount(0);
     await expect(homeMenu.filter({ hasText: 'Resources' })).toHaveCount(0);
     await expect(homeMenu.filter({ hasText: 'Partners' })).toHaveCount(0);
+  });
+
+  test('uses the same footer and three-column layout as the Solutions page', async ({ page }) => {
+    await page.setViewportSize({ width: 1365, height: 900 });
+    await page.goto('/solutions.html');
+    const solutionsFooter = await page.locator('.site-footer').innerHTML();
+
+    await page.goto('/products.html');
+    const desktopCardPositions = await page.locator('.solutions-card').evaluateAll((cards) =>
+      cards.map((card) => card.getBoundingClientRect().x)
+    );
+    expect(desktopCardPositions[0]).toBeLessThan(desktopCardPositions[1]);
+    expect(desktopCardPositions[1]).toBeLessThan(desktopCardPositions[2]);
+    expect(await page.locator('.site-footer').innerHTML()).toBe(solutionsFooter);
+
+    await page.setViewportSize({ width: 390, height: 844 });
+    const mobileCardPositions = await page.locator('.solutions-card').evaluateAll((cards) =>
+      cards.map((card) => {
+        const { x, y } = card.getBoundingClientRect();
+        return { x, y };
+      })
+    );
+    expect(mobileCardPositions[0].x).toBe(mobileCardPositions[1].x);
+    expect(mobileCardPositions[1].y).toBeLessThan(mobileCardPositions[2].y);
+  });
+
+  test('shows the matching document image in each Products section', async ({ page }) => {
+    await page.goto('/products.html');
+
+    const images = page.locator('.solutions-card .solutions-photo');
+    expect(await images.evaluateAll((elements) => elements.map((image) => image.getAttribute('src')))).toEqual([
+      'images/products-uav-measurements.png',
+      'images/products-rapps.jpeg',
+      'images/products-analytics.jpeg'
+    ]);
+    expect(await images.evaluateAll((elements) => elements.map((image) => image.getAttribute('alt')))).toEqual([
+      'DARA UAV carrying its measurement equipment payload',
+      'Robotic hand representing network applications',
+      'Telecom analysts viewing network measurement data'
+    ]);
+
+    for (const image of await images.all()) {
+      await expect.poll(() => image.evaluate((element) => element.naturalWidth)).toBeGreaterThan(0);
+    }
   });
 
   test('searches only existing site sections across both pages', async ({ page }) => {
