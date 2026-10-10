@@ -18,6 +18,7 @@
             '<div class="field"><label for="' + kind + '-email">Work email</label><input id="' + kind + '-email" type="email" name="email" autocomplete="email" maxlength="200" required></div>' +
             '<div class="field"><label for="' + kind + '-organisation">Organisation</label><input id="' + kind + '-organisation" type="text" name="organisation" autocomplete="organization" maxlength="150" required></div>' +
             '<div class="field"><label for="' + kind + '-message">Message</label><textarea id="' + kind + '-message" name="message" rows="4" maxlength="4000" required></textarea></div>' +
+            '<p class="form-privacy">We use these details only to reply to your request. See our <a href="privacy.html">Privacy Policy</a>.</p>' +
             '<p class="form-error" role="alert" hidden></p>' +
             '<div class="modal-actions">' +
               '<button type="button" class="btn btn-outline" data-close>Cancel</button>' +
