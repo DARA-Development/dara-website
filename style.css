@@ -295,6 +295,7 @@
 	.about-team { margin-top: 72px; padding-top: 44px; border-top: 1px solid var(--line); }
 	.about-team-heading { margin-bottom: 24px; text-align: center; }
 	.about-team-heading .about-eyebrow { margin-bottom: 8px; }
+	.about-team-heading h1,
 	.about-team-heading h2 { margin-bottom: 6px; font-size: 28px; letter-spacing: -0.03em; }
 	.about-team-heading > p:last-child { margin: 0; color: var(--ink-soft); font-size: 14px; }
 	.about-team-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; max-width: 960px; margin: 0 auto; }
@@ -312,6 +313,7 @@
 	.about-team-headshot-label { position: absolute; bottom: 20px; left: 0; width: 100%; color: var(--ink-faint); font-size: 9px; letter-spacing: 0.13em; text-align: center; }
 	.about-team-details { position: relative; display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 12px; padding: 17px 18px 19px; }
 	.about-team-index { grid-row: span 2; display: flex; width: 34px; height: 34px; align-items: center; justify-content: center; border-radius: 50%; background: var(--surface-strong); color: var(--brand); font-size: 10px; }
+	.about-team-member h2,
 	.about-team-member h3 { font-size: 14px; line-height: 1.4; }
 	.about-team-member .about-team-details > p { margin: 1px 0 0; color: var(--ink-soft); font-size: 12px; }
 
@@ -502,6 +504,16 @@
 		.masthead:not(.menu-open) .nav-actions .btn-outline,
 		.masthead:not(.menu-open) .theme-toggle,
 		.masthead:not(.menu-open) .primary-nav { display: none; }
+		.secondary-page .menu-toggle { display: none; }
+		.secondary-page .masthead:not(.menu-open) .primary-nav {
+			display: flex; flex-direction: row; justify-content: space-around; gap: 4px;
+			margin-top: 8px; border-top: 1px solid var(--line);
+		}
+		.secondary-page .primary-nav .nav-item { flex: 0 1 auto; }
+		.secondary-page .primary-nav .nav-link {
+			width: auto; padding: 8px 4px; font-size: 13px; white-space: nowrap;
+			border-bottom: 2px solid transparent;
+		}
 		.masthead.menu-open { max-height: 100vh; overflow-y: auto; }
 		.primary-nav { flex-direction: column; align-items: stretch; gap: 0; margin-top: 10px; border-top: 1px solid var(--line); }
 		.nav-item { height: auto; }
@@ -525,9 +537,8 @@
 		.footer-grid { grid-template-columns: 1fr 1fr; }
 		.site-footer.footer-home { grid-template-columns: 1fr; }
 		.footer-home .footer-home-brand { grid-column: 1; grid-row: 1; max-width: calc(100% - 40px); margin-left: 20px; padding-inline: 0; }
-		.footer-home .footer-home-links { grid-column: 1; grid-row: 2; gap: 0; padding-inline: 8px; }
-		.footer-home .footer-home-links { min-width: 0; padding-inline: 0; }
-		.footer-home .footer-home-links a { font-size: clamp(8.5px, 2.8vw, 10px); letter-spacing: 0; }
+		.footer-home .footer-home-links { grid-column: 1; grid-row: 2; min-width: 0; flex-wrap: wrap; justify-content: center; gap: 8px 14px; padding: 12px 8px 20px; }
+		.footer-home .footer-home-links a { font-size: 12px; letter-spacing: 0; }
 		.footer-home .footer-home-divider { grid-column: 1; grid-row: 3; }
 		.footer-home .footer-home-bottom { grid-column: 1; grid-row: 4; gap: 8px; padding-inline: 8px; font-size: clamp(8px, 2.7vw, 12.5px); }
 		.footer-home .footer-home-legal { gap: clamp(6px, 2vw, 20px); }
@@ -539,6 +550,7 @@
 		.about-journey-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 0; }
 		.about-journey-steps li:nth-child(odd) { padding-left: 0; border-left: 0; }
 		.about-team-grid { gap: 10px; }
+		.about-team-headshot { min-height: 0; }
 	}
 	@media (max-width: 600px) {
 		.video-home .hero-banner { height: clamp(390px, 110vw, 480px); }
@@ -580,6 +592,7 @@
 		.about-journey-steps li::before { position: absolute; top: 5px; left: -4px; width: 7px; height: 7px; border-radius: 50%; background: var(--brand); content: ""; }
 		.about-journey-steps li:last-child::before { background: var(--accent); }
 		.about-team { margin-top: 44px; padding-top: 32px; }
+		.about-team-heading h1,
 		.about-team-heading h2 { font-size: 24px; }
 		.about-team-grid { grid-template-columns: 1fr; }
 		.about-team-headshot { min-height: 200px; }

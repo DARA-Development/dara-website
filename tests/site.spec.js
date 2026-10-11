@@ -43,7 +43,7 @@ test.describe('homepage', () => {
       'https://www.linkedin.com/company/dara-telecom/'
     );
     await expect(footer.locator('.footer-home-links a')).toHaveText([
-      'About DARA', 'About us', 'Newsroom', 'Careers', 'Investors Relations', 'Contact'
+      'About DARA', 'Meet the team', 'About us', 'Newsroom', 'Careers', 'Investors Relations', 'Contact'
     ]);
     await expect(footer.locator('.footer-home-legal a')).toHaveText(['Privacy Policy', 'Terms of Use']);
   });
@@ -91,7 +91,7 @@ test.describe('homepage', () => {
       await expect(page.locator('.primary-nav .nav-link[aria-current="page"]')).toHaveText(activeLabel);
       await expect(page.locator('.primary-nav .nav-link', { hasText: /^Home$/ })).toHaveCount(0);
       await expect(page.locator('.site-footer .footer-home-links a')).toHaveText([
-        'About DARA', 'About us', 'Newsroom', 'Careers', 'Investors Relations', 'Contact'
+        'About DARA', 'Meet the team', 'About us', 'Newsroom', 'Careers', 'Investors Relations', 'Contact'
       ]);
     }
   });
@@ -157,33 +157,25 @@ test.describe('homepage', () => {
     await expect(search.locator('.site-search-results')).toContainText('No results found');
   });
 
-  test('collapses the header into a menu button on phones', async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.goto('/solutions.html');
+  test('keeps secondary-page navigation visible on phones', async ({ page }) => {
     const toggle = page.locator('.menu-toggle');
     const nav = page.locator('.primary-nav');
 
-    expect(await page.evaluate(() =>
-      document.documentElement.scrollWidth - document.documentElement.clientWidth
-    )).toBe(0);
-    await expect(toggle).toBeVisible();
-    await expect(page.locator('.masthead-top .nav-actions .btn-brand')).toBeVisible();
-    await expect(nav).toBeHidden();
-    await expect(page.locator('.site-search')).toBeHidden();
-
-    await toggle.click();
-    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
-    await expect(nav.locator('.nav-link')).toHaveText(['Solutions', 'Products', 'About us']);
-    await expect(page.locator('.site-search')).toBeVisible();
-    await expect(page.locator('#themeToggle')).toBeVisible();
-
-    await page.locator('.masthead [data-modal="partner"]').click();
-    await expect(page.locator('#modal-partner')).toBeVisible();
-    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
-
-    await page.setViewportSize({ width: 1365, height: 768 });
-    await expect(toggle).toBeHidden();
-    await expect(nav).toBeVisible();
+    for (const width of [320, 390]) {
+      await page.setViewportSize({ width, height: 844 });
+      for (const path of ['/solutions.html', '/products.html', '/about_us.html']) {
+        await page.goto(path);
+        await expect(toggle).toBeHidden();
+        await expect(nav).toBeVisible();
+        await expect(nav.locator('.nav-link')).toHaveText(['Solutions', 'Products', 'About us']);
+        expect(await nav.evaluate((element) =>
+          getComputedStyle(element).flexDirection
+        )).toBe('row');
+        expect(await page.evaluate(() =>
+          document.documentElement.scrollWidth - document.documentElement.clientWidth
+        )).toBe(0);
+      }
+    }
   });
 
   test('toggles dark mode and persists the preference', async ({ page }) => {
@@ -238,7 +230,7 @@ test.describe('home2 page', () => {
 });
 
 test.describe('about page', () => {
-  test('shows concise DARA purpose statements and headshot slots for the team', async ({ page }) => {
+  test('shows concise DARA purpose statements separately from the team page', async ({ page }) => {
     await page.goto('/about_us.html');
 
     await expect(page).toHaveTitle('About us | DARA Telecom');
@@ -258,10 +250,7 @@ test.describe('about page', () => {
       'OUR MISSION', 'OUR GOAL', 'OUR VISION'
     ]);
     await expect(page.locator('.about-purpose-card img')).toHaveCount(0);
-    await expect(page.locator('.about-team-headshot')).toHaveCount(3);
-    await expect(page.locator('.about-team-headshot-label')).toHaveText([
-      'ADD HEADSHOT', 'ADD HEADSHOT', 'ADD HEADSHOT'
-    ]);
+    await expect(page.locator('.about-team')).toHaveCount(0);
     await expect(page.locator('.about-journey-steps li')).toHaveCount(5);
     await expect(page.locator('.about-journey-steps .about-step-name')).toHaveText([
       'Reach', 'Measure', 'Analyse', 'Ready', 'Boundless Connectivity'
@@ -273,12 +262,6 @@ test.describe('about page', () => {
     await expect(page.locator('.primary-nav .nav-link').nth(0)).toHaveAttribute('href', 'solutions.html');
     await expect(page.locator('.primary-nav .nav-link').nth(1)).toHaveAttribute('href', 'products.html');
     await expect(page.locator('.site-footer')).toBeVisible();
-    await expect(page.locator('#about-team-title')).toHaveText('Built by people who think ahead.');
-    await expect(page.locator('.about-team-heading > p:last-child')).toHaveText('Meet the team working to make telecom ready for what’s next.');
-    await expect(page.locator('.about-team-member h3')).toHaveText([
-      'Mo Nadder', 'Ahmed Nadder', 'Mo Abdelaziz'
-    ]);
-    await expect(page.locator('.about-team-member .about-team-details > p')).toHaveText(['CTO', 'CIO', 'CIO']);
     await expect(page.locator('.about-intro')).toHaveText(
       'DARA uses drone-led analytics to reveal coverage gaps and prepare networks for Boundless Connectivity.'
     );
@@ -292,8 +275,55 @@ test.describe('about page', () => {
   });
 });
 
+test.describe('team page', () => {
+  test('shows the team profiles and shared footer', async ({ page }) => {
+    await page.goto('/team.html');
+
+    await expect(page).toHaveTitle('Meet the Team | DARA Telecom');
+    await expect(page.locator('#about-team-title')).toHaveText('Built by people who think ahead.');
+    await expect(page.locator('.about-team-heading > p:last-child')).toHaveText(
+      'Meet the team working to make telecom ready for what’s next.'
+    );
+    await expect(page.locator('.about-team-member h2')).toHaveText([
+      'Mo Nadder', 'Ahmed Nadder', 'Mo Abdelaziz'
+    ]);
+    await expect(page.locator('.about-team-member .about-team-details > p')).toHaveText(['CTO', 'CIO', 'CIO']);
+    await expect(page.locator('.about-team-headshot-label')).toHaveText([
+      'ADD HEADSHOT', 'ADD HEADSHOT', 'ADD HEADSHOT'
+    ]);
+    await expect(page.locator('.footer-home-links a')).toHaveText([
+      'About DARA', 'Meet the team', 'About us', 'Newsroom', 'Careers', 'Investors Relations', 'Contact'
+    ]);
+    await expect(page.locator('.footer-home-links a').nth(1)).toHaveAttribute('href', 'team.html');
+
+    await page.goto('/about_us.html');
+    await page.locator('.footer-home-links a', { hasText: /^Meet the team$/ }).click();
+    await expect(page).toHaveURL(/\/team\.html$/);
+
+    await page.goto('/home2.html');
+    await expect(page.locator('.footer-home-links a', { hasText: /^Meet the team$/ })).toHaveAttribute('href', 'team.html');
+  });
+
+  test('includes team details in site search', async ({ page }) => {
+    await page.goto('/');
+
+    const search = page.locator('.site-search');
+    await search.locator('input').fill('Ahmed Nadder');
+    await search.locator('input').press('Enter');
+    await expect(search.locator('.site-search-results a')).toHaveAttribute('href', /team\.html#team$/);
+  });
+});
+
 test('keeps the shared pages free of horizontal overflow at responsive widths', async ({ page }) => {
-  const paths = ['/', '/solutions.html', '/products.html', '/about_us.html'];
+  const paths = [
+    '/',
+    '/solutions.html',
+    '/products.html',
+    '/about_us.html',
+    '/team.html',
+    '/privacy.html',
+    '/terms.html'
+  ];
 
   for (const width of [320, 390, 768, 1024, 1440]) {
     await page.setViewportSize({ width, height: 900 });
@@ -308,24 +338,41 @@ test('keeps the shared pages free of horizontal overflow at responsive widths', 
       ).toBe(0);
 
       const footerLinks = page.locator('.footer-home-links a');
-      await expect(footerLinks).toHaveCount(6);
+      await expect(footerLinks).toHaveCount(7);
+      const footerLayout = await footerLinks.evaluateAll((links) => ({
+        fontSizes: links.map((link) => parseFloat(getComputedStyle(link).fontSize)),
+        bounds: links.map((link) => {
+          const { left, right } = link.getBoundingClientRect();
+          return { left, right };
+        })
+      }));
       expect(
-        await footerLinks.evaluateAll((links) =>
-          links.every((link) =>
-            Math.abs(link.getBoundingClientRect().top - links[0].getBoundingClientRect().top) < 1
-          )
-        ),
-        `${path} footer links should stay on one line at ${width}px`
+        footerLayout.fontSizes.every((fontSize) => fontSize >= (width <= 980 ? 11 : 12)),
+        `${path} footer links should remain legible at ${width}px`
       ).toBe(true);
-
-      if (path === '/about_us.html') {
+      expect(
+        footerLayout.bounds.every(({ left, right }) => left >= 0 && right <= width),
+        `${path} footer links should fit within the viewport at ${width}px`
+      ).toBe(true);
+      if (width > 980) {
         expect(
-          await page.locator('.about-team-photo').evaluateAll((photos) =>
+          await footerLinks.evaluateAll((links) =>
+            links.every((link) =>
+              Math.abs(link.getBoundingClientRect().top - links[0].getBoundingClientRect().top) < 1
+            )
+          ),
+          `${path} desktop footer links should stay on one line`
+        ).toBe(true);
+      }
+
+      if (path === '/team.html') {
+        expect(
+          await page.locator('.about-team-headshot').evaluateAll((photos) =>
             photos.every((photo) =>
               photo.getBoundingClientRect().right <= document.documentElement.clientWidth
             )
           ),
-          `About us team photos should fit at ${width}px`
+          `Team headshots should fit at ${width}px`
         ).toBe(true);
       }
 

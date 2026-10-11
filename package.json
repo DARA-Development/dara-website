@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "Website for DARA\r Under Construction\r Test if it will deploy",
   "scripts": {
-    "start": "live-server",
-    "test": "playwright test",
+    "build": "node scripts/build.mjs",
+    "start": "npm run build && live-server dist",
+    "test": "npm run build && playwright test",
     "test:headed": "playwright test --headed"
   },
   "keywords": [],

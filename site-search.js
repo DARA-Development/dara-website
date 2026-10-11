@@ -20,14 +20,22 @@
   function getSiteIndex() {
     if (!indexPromise) {
       var currentUrl = new URL(window.location.href);
-      var currentIsAboutPage = currentUrl.pathname.endsWith('/about_us.html');
-      var otherPageUrl = new URL(currentIsAboutPage ? 'index.html' : 'about_us.html', currentUrl);
-      indexPromise = fetch(otherPageUrl.href).then(function(response) {
-        if (!response.ok) throw new Error('Search index request failed: ' + response.status);
-        return response.text();
-      }).then(function(html) {
-        var otherDocument = new DOMParser().parseFromString(html, 'text/html');
-        return collectSections(document, currentUrl).concat(collectSections(otherDocument, otherPageUrl));
+      var currentPath = currentUrl.pathname === '/' ? '/index.html' : currentUrl.pathname;
+      var pageUrls = ['index.html', 'about_us.html', 'team.html']
+        .map(function(path) { return new URL(path, currentUrl); })
+        .filter(function(pageUrl) { return pageUrl.pathname !== currentPath; });
+      indexPromise = Promise.all(pageUrls.map(function(pageUrl) {
+        return fetch(pageUrl.href).then(function(response) {
+          if (!response.ok) throw new Error('Search index request failed: ' + response.status);
+          return response.text();
+        }).then(function(html) {
+          var otherDocument = new DOMParser().parseFromString(html, 'text/html');
+          return collectSections(otherDocument, pageUrl);
+        });
+      })).then(function(otherPageSections) {
+        return otherPageSections.reduce(function(index, sections) {
+          return index.concat(sections);
+        }, collectSections(document, currentUrl));
       }).catch(function(error) {
         indexPromise = null;
         throw error;

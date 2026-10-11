@@ -1,14 +1,17 @@
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
-import { extname, join, normalize } from 'node:path';
+import { extname, join, normalize, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const root = fileURLToPath(new URL('../', import.meta.url));
+const root = resolve(fileURLToPath(new URL('../', import.meta.url)), process.argv[2] || 'dist');
+const port = Number(process.argv[3] || 4174);
 const contentTypes = {
   '.css': 'text/css',
   '.html': 'text/html',
+  '.mp4': 'video/mp4',
   '.png': 'image/png',
   '.svg': 'image/svg+xml',
+  '.ttf': 'font/ttf',
 };
 
 const server = createServer(async (request, response) => {
@@ -34,6 +37,6 @@ const server = createServer(async (request, response) => {
   }
 });
 
-server.listen(4173, '127.0.0.1', () => {
-  console.log('DARA test server listening on http://127.0.0.1:4173');
+server.listen(port, '127.0.0.1', () => {
+  console.log(`DARA test server listening on http://127.0.0.1:${port}`);
 });
