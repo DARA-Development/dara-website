@@ -21,7 +21,7 @@
     if (!indexPromise) {
       var currentUrl = new URL(window.location.href);
       var currentPath = currentUrl.pathname === '/' ? '/index.html' : currentUrl.pathname;
-      var pageUrls = ['index.html', 'about_us.html', 'team.html']
+      var pageUrls = ['index.html', 'about_us.html']
         .map(function(path) { return new URL(path, currentUrl); })
         .filter(function(pageUrl) { return pageUrl.pathname !== currentPath; });
       indexPromise = Promise.all(pageUrls.map(function(pageUrl) {

@@ -50,7 +50,7 @@
           <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>
         </button>
         <button class="btn btn-outline" data-modal="partner">Become a partner</button>
-        <button class="btn btn-brand" data-modal="demo">Contact us</button>
+        <button class="btn btn-brand" data-modal="contact">Contact us</button>
       </div>
     </div>
   </div>
@@ -65,16 +65,19 @@
     <div class="hero-banner-blue-overlay" aria-hidden="true"></div>
     <div class="hero-banner-tagline" role="status" aria-live="polite">
       <div class="hero-sequence-copy">
-        <span class="hero-sequence-count"></span>
         <h1></h1>
         <p></p>
       </div>
-      <img class="hero-sequence-logo" src="images/dara-logo.png" alt="DARA Telecom" />
+      <figure class="hero-sequence-brand">
+        <img class="hero-sequence-logo" src="images/dara-logo.png" alt="DARA Telecom" />
+        <figcaption class="hero-sequence-slogan">Measure beyond limits</figcaption>
+      </figure>
     </div>
     <nav class="hero-nav-links" aria-label="Explore DARA">
       <a href="solutions.html">Solutions</a>
       <a href="products.html">Products</a>
       <a href="about_us.html">About us</a>
+      <a href="story.html">Our story</a>
     </nav>
     <div class="hero-ctas">
       <button class="btn btn-brand" data-modal="demo">Request a demo</button>
@@ -100,13 +103,10 @@
       </div>
     </div>
     <nav class="footer-home-links" aria-label="Company and legal">
-      <a href="about_us.html#about">About DARA</a>
-      <a href="team.html">Meet the team</a>
-      <a href="about_us.html">About us</a>
-      <a href="#" data-static-link>Newsroom</a>
-      <a href="#" data-static-link>Careers</a>
-      <a href="#" data-static-link>Investors Relations</a>
-      <a href="#" data-modal="demo" data-modal-link>Contact</a>
+      <a href="about_us.html#page-top">About us</a>
+      <a href="newsroom.html">Newsroom</a>
+      <a href="careers.html">Careers</a>
+      <a href="#" data-modal="contact" data-modal-link>Contact us</a>
     </nav>
     <div class="footer-home-divider" aria-hidden="true"></div>
     <div class="footer-bottom footer-home-bottom">
@@ -124,10 +124,9 @@
   heroBannerVideo.playbackRate = 0.5;
   var heroBannerTagline = document.querySelector('.hero-banner-tagline');
   var heroSequenceCopy = document.querySelector('.hero-sequence-copy');
-  var heroSequenceCount = document.querySelector('.hero-sequence-count');
   var heroSequenceHeading = heroSequenceCopy.querySelector('h1');
   var heroSequenceDescription = heroSequenceCopy.querySelector('p');
-  var heroSequenceLogo = document.querySelector('.hero-sequence-logo');
+  var heroSequenceLogo = document.querySelector('.hero-sequence-brand');
   var heroBanner = document.querySelector('.hero-banner');
   var heroSequenceStarted = false;
   var heroSequenceComplete = false;
@@ -135,23 +134,19 @@
   var heroMessages = [
     {
       heading: 'Reach',
-      description: 'Reach places where networks struggle to cover.'
+      description: 'Limitless reachability for all use cases.'
     },
     {
       heading: 'Measure',
-      description: 'Capture real-world terrestrial and satellite coverage.'
+      description: 'Satellite NTN, terrestrial FWA, and mMIMO beams measurements in real 3D'
     },
     {
-      heading: 'Analyze',
-      description: 'Turn every measurement into clear, actionable insight.'
+      heading: 'Analyse',
+      description: 'Turn every measurement into clear actionable insight.'
     },
     {
       heading: 'Ready',
-      description: 'Close coverage gaps. Prepare for what’s next.'
-    },
-    {
-      heading: 'Achieve Boundless Connectivity',
-      description: 'No edge. No gap. No ceiling.'
+      description: 'Achieve boundless connectivity'
     }
   ];
 
@@ -159,7 +154,6 @@
     var message = heroMessages[index];
     heroSequenceCopy.classList.remove('is-current');
     window.setTimeout(function() {
-      heroSequenceCount.textContent = String(index + 1).padStart(2, '0') + ' / ' + String(heroMessages.length).padStart(2, '0');
       heroSequenceHeading.textContent = message.heading;
       heroSequenceDescription.textContent = message.description;
       heroSequenceCopy.classList.add('is-current');

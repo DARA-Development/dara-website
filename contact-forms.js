@@ -2,32 +2,36 @@
   // Where enquiries are delivered. Change the address here to redirect every form on the site.
   var FORM_ENDPOINT = 'https://formsubmit.co/admin@teamdara.com';
 
-  function formModal(kind, title, intro, subject) {
+  // options.general marks a general enquiry: organisation is optional and the wording says "message" rather than "request".
+  // options.country adds a required Country field.
+  function formModal(kind, title, intro, subject, options) {
+    var general = Boolean(options && options.general);
     return '<dialog id="modal-' + kind + '">' +
       '<div class="modal-inner">' +
         '<button class="modal-close" data-close aria-label="Close">&times;</button>' +
         '<div class="modal-form">' +
           '<h2>' + title + '</h2>' +
-          '<p class="sub-modal">' + intro + '</p>' +
+          (intro ? '<p class="sub-modal">' + intro + '</p>' : '') +
           '<form action="' + FORM_ENDPOINT + '" method="POST" data-form="' + kind + '">' +
             '<input type="hidden" name="_subject" value="' + subject + '">' +
             '<input type="hidden" name="_captcha" value="false">' +
             '<input type="hidden" name="_template" value="table">' +
             '<input class="form-honey" type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true">' +
             '<div class="field"><label for="' + kind + '-name">Name</label><input id="' + kind + '-name" type="text" name="name" autocomplete="name" maxlength="100" required></div>' +
-            '<div class="field"><label for="' + kind + '-email">Work email</label><input id="' + kind + '-email" type="email" name="email" autocomplete="email" maxlength="200" required></div>' +
-            '<div class="field"><label for="' + kind + '-organisation">Organisation</label><input id="' + kind + '-organisation" type="text" name="organisation" autocomplete="organization" maxlength="150" required></div>' +
+            '<div class="field"><label for="' + kind + '-email">' + (general ? 'Email' : 'Work email') + '</label><input id="' + kind + '-email" type="email" name="email" autocomplete="email" maxlength="200" required></div>' +
+            '<div class="field"><label for="' + kind + '-organisation">' + (general ? 'Organisation (optional)' : 'Organisation') + '</label><input id="' + kind + '-organisation" type="text" name="organisation" autocomplete="organization" maxlength="150"' + (general ? '' : ' required') + '></div>' +
+            (options && options.country ? '<div class="field"><label for="' + kind + '-country">Country</label><input id="' + kind + '-country" type="text" name="country" autocomplete="country-name" maxlength="100" required></div>' : '') +
             '<div class="field"><label for="' + kind + '-message">Message</label><textarea id="' + kind + '-message" name="message" rows="4" maxlength="4000" required></textarea></div>' +
-            '<p class="form-privacy">We use these details only to reply to your request. See our <a href="privacy.html">Privacy Policy</a>.</p>' +
+            '<p class="form-privacy">We use these details only to reply to your ' + (general ? 'message' : 'request') + '. See our <a href="privacy.html">Privacy Policy</a>.</p>' +
             '<p class="form-error" role="alert" hidden></p>' +
             '<div class="modal-actions">' +
               '<button type="button" class="btn btn-outline" data-close>Cancel</button>' +
-              '<button type="submit" class="btn btn-brand">Send request</button>' +
+              '<button type="submit" class="btn btn-brand">' + (general ? 'Send message' : 'Send request') + '</button>' +
             '</div>' +
           '</form>' +
         '</div>' +
         '<div class="modal-success">' +
-          '<h2>Request sent</h2>' +
+          '<h2>' + (general ? 'Message sent' : 'Request sent') + '</h2>' +
           '<p>We\'ll be in touch shortly. Close this window to keep browsing.</p>' +
         '</div>' +
       '</div>' +
@@ -35,8 +39,9 @@
   }
 
   document.body.insertAdjacentHTML('beforeend',
-    formModal('demo', 'Request a demo', 'Tell us about the network you want validated. We\'ll follow up within two working days.', 'DARA Telecom demo request') +
-    formModal('partner', 'Become a partner', 'MNOs, rail operators, rApp developers and O-RAN vendors welcome.', 'DARA Telecom partnership enquiry') +
+    formModal('contact', 'Contact us', 'Send us a question or a message and we\'ll get back to you.', 'DARA Telecom contact enquiry', { general: true }) +
+    formModal('demo', 'Request a demo', '', 'DARA Telecom demo request', { country: true }) +
+    formModal('partner', 'Become a partner', '', 'DARA Telecom partnership enquiry', { country: true }) +
     '<dialog id="modal-login">' +
       '<div class="modal-inner">' +
         '<button class="modal-close" data-close aria-label="Close">&times;</button>' +
@@ -49,7 +54,7 @@
       '</div>' +
     '</dialog>');
 
-  var modals = { demo: document.getElementById('modal-demo'), partner: document.getElementById('modal-partner'), login: document.getElementById('modal-login') };
+  var modals = { contact: document.getElementById('modal-contact'), demo: document.getElementById('modal-demo'), partner: document.getElementById('modal-partner'), login: document.getElementById('modal-login') };
   document.querySelectorAll('[data-modal]').forEach(function(btn) {
     btn.addEventListener('click', function(e) {
       if (btn.hasAttribute('data-modal-link')) e.preventDefault();
@@ -70,10 +75,9 @@
   document.querySelectorAll('dialog').forEach(function(dlg) {
     dlg.addEventListener('click', function(e) { if (e.target === dlg) dlg.close(); });
   });
-  var hashModal = { '#demo': 'demo', '#partners': 'partner', '#login': 'login' }[window.location.hash];
-  if (hashModal) {
-    document.querySelector('[data-modal="' + hashModal + '"]').click();
-  }
+  var hashModal = { '#contact': 'contact', '#demo': 'demo', '#partners': 'partner', '#login': 'login' }[window.location.hash];
+  var hashTrigger = hashModal && document.querySelector('[data-modal="' + hashModal + '"]');
+  if (hashTrigger) hashTrigger.click();
 
   document.querySelectorAll('form[data-form]').forEach(function(form) {
     var dlg = form.closest('dialog');
@@ -109,7 +113,7 @@
         if (String(result.success) !== 'true') throw new Error('Form submission failed');
         showSuccess();
       }).catch(function() {
-        error.textContent = "Sorry, we couldn't send your request. Please check your connection and try again.";
+        error.textContent = "Sorry, we couldn't send your " + (form.getAttribute('data-form') === 'contact' ? 'message' : 'request') + ". Please check your connection and try again.";
         error.hidden = false;
       }).then(function() {
         clearTimeout(timeout);

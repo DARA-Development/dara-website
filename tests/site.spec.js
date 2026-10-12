@@ -21,7 +21,7 @@ test.describe('homepage', () => {
     await expect(bannerVideo).toHaveAttribute('loop', '');
     await expect(bannerVideo.locator('source')).toHaveAttribute('src', 'videos/dara-drone-flight.mp4');
     await expect.poll(() => bannerVideo.evaluate((video) => video.playbackRate)).toBe(0.5);
-    await expect(page.locator('.hero-nav-links a')).toHaveText(['Solutions', 'Products', 'About us']);
+    await expect(page.locator('.hero-nav-links a')).toHaveText(['Solutions', 'Products', 'About us', 'Our story']);
     await expect(page.locator('.hero-ctas [data-modal="demo"]')).toHaveCount(1);
     await expect(page.locator('.hero-ctas [data-modal="partner"]')).toHaveCount(1);
     await expect(page.locator('.hero-sequence-logo')).toHaveAttribute('src', 'images/dara-logo.png');
@@ -33,7 +33,6 @@ test.describe('homepage', () => {
       video.dispatchEvent(new Event('timeupdate'));
     });
     await expect(tagline).toHaveClass(/is-active/);
-    await expect(page.locator('.hero-sequence-count')).toHaveText('01 / 05');
     await expect(page.locator('.hero-sequence-copy h1')).toHaveText('Reach');
 
     const footer = page.locator('.site-footer');
@@ -43,8 +42,9 @@ test.describe('homepage', () => {
       'https://www.linkedin.com/company/dara-telecom/'
     );
     await expect(footer.locator('.footer-home-links a')).toHaveText([
-      'About DARA', 'Meet the team', 'About us', 'Newsroom', 'Careers', 'Investors Relations', 'Contact'
+      'About us', 'Newsroom', 'Careers', 'Contact us'
     ]);
+    await expect(footer.locator('.footer-home-links a').first()).toHaveAttribute('href', 'about_us.html#page-top');
     await expect(footer.locator('.footer-home-legal a')).toHaveText(['Privacy Policy', 'Terms of Use']);
   });
 
@@ -55,13 +55,12 @@ test.describe('homepage', () => {
     await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
   });
 
-  test('starts the five-stage animation with Reach', async ({ page }) => {
+  test('starts the four-stage animation with Reach', async ({ page }) => {
     expect(await page.evaluate(() => heroMessages.map(({ heading }) => heading))).toEqual([
       'Reach',
       'Measure',
-      'Analyze',
-      'Ready',
-      'Achieve Boundless Connectivity'
+      'Analyse',
+      'Ready'
     ]);
 
     const video = page.locator('.hero-banner-video');
@@ -71,27 +70,28 @@ test.describe('homepage', () => {
       element.dispatchEvent(new Event('timeupdate'));
     });
 
-    await expect(page.locator('.hero-sequence-count')).toHaveText('01 / 05');
     await expect(page.locator('.hero-sequence-copy h1')).toHaveText('Reach');
     await expect(page.locator('.hero-sequence-logo')).toHaveAttribute('alt', 'DARA Telecom');
-    await expect(page.locator('.hero-nav-links a')).toHaveText(['Solutions', 'Products', 'About us']);
+    await expect(page.locator('.hero-sequence-slogan')).toHaveText('Measure beyond limits');
+    await expect(page.locator('.hero-nav-links a')).toHaveText(['Solutions', 'Products', 'About us', 'Our story']);
   });
 
   test('uses the requested navigation links on secondary pages without a Home item', async ({ page }) => {
     for (const [path, expectedTitle, activeLabel] of [
       ['/solutions.html', 'Solutions | DARA Telecom', 'Solutions'],
       ['/products.html', 'Products | DARA Telecom', 'Products'],
+      ['/story.html', 'Our Story | DARA Telecom', 'Our story'],
       ['/about_us.html', 'About us | DARA Telecom', 'About us']
     ]) {
       await page.goto(path);
       await expect(page).toHaveTitle(expectedTitle);
       await expect(page.locator('.primary-nav .nav-link')).toHaveText([
-        'Solutions', 'Products', 'About us'
+        'Solutions', 'Products', 'About us', 'Our story'
       ]);
       await expect(page.locator('.primary-nav .nav-link[aria-current="page"]')).toHaveText(activeLabel);
       await expect(page.locator('.primary-nav .nav-link', { hasText: /^Home$/ })).toHaveCount(0);
       await expect(page.locator('.site-footer .footer-home-links a')).toHaveText([
-        'About DARA', 'Meet the team', 'About us', 'Newsroom', 'Careers', 'Investors Relations', 'Contact'
+        'About us', 'Newsroom', 'Careers', 'Contact us'
       ]);
     }
   });
@@ -163,11 +163,11 @@ test.describe('homepage', () => {
 
     for (const width of [320, 390]) {
       await page.setViewportSize({ width, height: 844 });
-      for (const path of ['/solutions.html', '/products.html', '/about_us.html']) {
+      for (const path of ['/solutions.html', '/story.html', '/products.html', '/about_us.html']) {
         await page.goto(path);
         await expect(toggle).toBeHidden();
         await expect(nav).toBeVisible();
-        await expect(nav.locator('.nav-link')).toHaveText(['Solutions', 'Products', 'About us']);
+        await expect(nav.locator('.nav-link')).toHaveText(['Solutions', 'Products', 'About us', 'Our story']);
         expect(await nav.evaluate((element) =>
           getComputedStyle(element).flexDirection
         )).toBe('row');
@@ -195,10 +195,10 @@ test.describe('homepage', () => {
 
     await page.locator('[data-modal="demo"]').first().click();
     await expect(modal).toBeVisible();
-    await expect(modal.locator('.field input, .field textarea')).toHaveCount(4);
+    await expect(modal.locator('.field input, .field textarea')).toHaveCount(5);
 
     const form = modal.locator('form');
-    await expect(form.locator('[required]')).toHaveCount(4);
+    await expect(form.locator('[required]')).toHaveCount(5);
     await expect(form).toHaveJSProperty('noValidate', false);
     expect(await form.evaluate((element) => element.checkValidity())).toBe(false);
 
@@ -230,7 +230,7 @@ test.describe('home2 page', () => {
 });
 
 test.describe('about page', () => {
-  test('shows concise DARA purpose statements separately from the team page', async ({ page }) => {
+  test('shows concise DARA purpose statements above the team section', async ({ page }) => {
     await page.goto('/about_us.html');
 
     await expect(page).toHaveTitle('About us | DARA Telecom');
@@ -243,24 +243,22 @@ test.describe('about page', () => {
     await expect(page.locator('.masthead-top .nav-actions .btn-brand')).toHaveText('Contact us');
     await expect(page.locator('main h1')).toHaveText('Building readiness for what’s next in telecom.');
     await expect(page.locator('.about-purpose-card')).toHaveCount(3);
-    await expect(page.locator('.about-purpose-card').nth(0)).toContainText('Reach the hard-to-reach. Turn real-world coverage into insight operators can act on.');
+    await expect(page.locator('.about-purpose-card').nth(0)).toContainText('We measure and assess mobile connectivity, across Space, Air, Ground and Sea, using innovative, cost-efficient tools.');
     await expect(page.locator('.about-purpose-card').nth(1)).toContainText('Close coverage gaps. Get networks ready for what’s next.');
-    await expect(page.locator('.about-purpose-card').nth(2)).toContainText('A world with no edge, no gap, and no ceiling—Networks Without Bounds.');
+    await expect(page.locator('.about-purpose-card').nth(2)).toContainText('Reliable, borderless mobile connectivity for everyone, closing the digital divide and powering digital transformation worldwide.');
     await expect(page.locator('.about-purpose-card .about-eyebrow')).toHaveText([
       'OUR MISSION', 'OUR GOAL', 'OUR VISION'
     ]);
     await expect(page.locator('.about-purpose-card img')).toHaveCount(0);
-    await expect(page.locator('.about-team')).toHaveCount(0);
-    await expect(page.locator('.about-journey-steps li')).toHaveCount(5);
-    await expect(page.locator('.about-journey-steps .about-step-name')).toHaveText([
-      'Reach', 'Measure', 'Analyse', 'Ready', 'Boundless Connectivity'
-    ]);
+    await expect(page.locator('.about-team')).toHaveCount(1);
+    await expect(page.locator('.about-journey')).toHaveCount(0);
     await expect(page.locator('.brand a')).toHaveAttribute('href', 'index.html');
     await expect(page.locator('.primary-nav .nav-link')).toHaveText([
-      'Solutions', 'Products', 'About us'
+      'Solutions', 'Products', 'About us', 'Our story'
     ]);
     await expect(page.locator('.primary-nav .nav-link').nth(0)).toHaveAttribute('href', 'solutions.html');
     await expect(page.locator('.primary-nav .nav-link').nth(1)).toHaveAttribute('href', 'products.html');
+    await expect(page.locator('.primary-nav .nav-link').nth(3)).toHaveAttribute('href', 'story.html');
     await expect(page.locator('.site-footer')).toBeVisible();
     await expect(page.locator('.about-intro')).toHaveText(
       'DARA uses drone-led analytics to reveal coverage gaps and prepare networks for Boundless Connectivity.'
@@ -275,52 +273,58 @@ test.describe('about page', () => {
   });
 });
 
-test.describe('team page', () => {
+test.describe('team section', () => {
   test('shows the team profiles and shared footer', async ({ page }) => {
-    await page.goto('/team.html');
+    await page.goto('/about_us.html#team');
 
-    await expect(page).toHaveTitle('Meet the Team | DARA Telecom');
+    await expect(page).toHaveTitle('About us | DARA Telecom');
     await expect(page.locator('#about-team-title')).toHaveText('Built by people who think ahead.');
     await expect(page.locator('.about-team-heading > p:last-child')).toHaveText(
       'Meet the team working to make telecom ready for what’s next.'
     );
-    await expect(page.locator('.about-team-member h2')).toHaveText([
-      'Mo Nadder', 'Ahmed Nadder', 'Mo Abdelaziz'
+    await expect(page.locator('.about-team-member h3')).toHaveText([
+      'Mo Nadder', 'Ahmed Hamdy', 'Mo Abdelaziz'
     ]);
     await expect(page.locator('.about-team-member .about-team-details > p')).toHaveText(['CTO', 'CIO', 'CIO']);
     await expect(page.locator('.about-team-headshot-label')).toHaveText([
       'ADD HEADSHOT', 'ADD HEADSHOT', 'ADD HEADSHOT'
     ]);
     await expect(page.locator('.footer-home-links a')).toHaveText([
-      'About DARA', 'Meet the team', 'About us', 'Newsroom', 'Careers', 'Investors Relations', 'Contact'
+      'About us', 'Newsroom', 'Careers', 'Contact us'
     ]);
-    await expect(page.locator('.footer-home-links a').nth(1)).toHaveAttribute('href', 'team.html');
+    await expect(page.locator('.footer-home-links a', { hasText: /^Meet the team$/ })).toHaveCount(0);
+    await expect(page.locator('.footer-home-links a', { hasText: /^Investors Relations$/ })).toHaveCount(0);
 
     await page.goto('/about_us.html');
-    await page.locator('.footer-home-links a', { hasText: /^Meet the team$/ }).click();
-    await expect(page).toHaveURL(/\/team\.html$/);
+    await page.locator('.site-footer').scrollIntoViewIfNeeded();
+    await page.locator('.footer-home-links a', { hasText: /^About us$/ }).click();
+    await expect(page).toHaveURL(/\/about_us\.html#page-top$/);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
 
     await page.goto('/home2.html');
-    await expect(page.locator('.footer-home-links a', { hasText: /^Meet the team$/ })).toHaveAttribute('href', 'team.html');
+    await expect(page.locator('.footer-home-links a', { hasText: /^About us$/ })).toHaveAttribute('href', 'about_us.html#page-top');
   });
 
   test('includes team details in site search', async ({ page }) => {
     await page.goto('/');
 
     const search = page.locator('.site-search');
-    await search.locator('input').fill('Ahmed Nadder');
+    await search.locator('input').fill('Ahmed Hamdy');
     await search.locator('input').press('Enter');
-    await expect(search.locator('.site-search-results a')).toHaveAttribute('href', /team\.html#team$/);
+    await expect(search.locator('.site-search-results a')).toHaveAttribute('href', /about_us\.html#team$/);
   });
 });
 
 test('keeps the shared pages free of horizontal overflow at responsive widths', async ({ page }) => {
+  test.setTimeout(90000);
   const paths = [
     '/',
     '/solutions.html',
     '/products.html',
     '/about_us.html',
-    '/team.html',
+    '/newsroom.html',
+    '/careers.html',
+    '/story.html',
     '/privacy.html',
     '/terms.html'
   ];
@@ -338,7 +342,7 @@ test('keeps the shared pages free of horizontal overflow at responsive widths', 
       ).toBe(0);
 
       const footerLinks = page.locator('.footer-home-links a');
-      await expect(footerLinks).toHaveCount(7);
+      await expect(footerLinks).toHaveCount(4);
       const footerLayout = await footerLinks.evaluateAll((links) => ({
         fontSizes: links.map((link) => parseFloat(getComputedStyle(link).fontSize)),
         bounds: links.map((link) => {
@@ -365,7 +369,7 @@ test('keeps the shared pages free of horizontal overflow at responsive widths', 
         ).toBe(true);
       }
 
-      if (path === '/team.html') {
+      if (path === '/about_us.html') {
         expect(
           await page.locator('.about-team-headshot').evaluateAll((photos) =>
             photos.every((photo) =>
@@ -381,7 +385,7 @@ test('keeps the shared pages free of horizontal overflow at responsive widths', 
           const banner = document.querySelector('.hero-banner');
           const tagline = document.querySelector('.hero-banner-tagline');
           const copy = document.querySelector('.hero-sequence-copy');
-          const logo = document.querySelector('.hero-sequence-logo');
+          const logo = document.querySelector('.hero-sequence-brand');
           const nav = document.querySelector('.hero-nav-links');
           const ctas = document.querySelector('.hero-ctas');
           const bounds = (element) => {
@@ -395,9 +399,9 @@ test('keeps the shared pages free of horizontal overflow at responsive widths', 
           tagline.classList.add('is-active');
           copy.classList.add('is-current');
           banner.classList.add('is-presented');
-          copy.querySelector('h1').textContent = 'Achieve Boundless Connectivity';
+          copy.querySelector('h1').textContent = 'Measure';
           copy.querySelector('p').textContent =
-            'Close coverage gaps. Prepare for what is next. Capture real-world terrestrial and satellite coverage.';
+            'Satellite NTN, terrestrial FWA, and mMIMO beams measurements in real 3D';
 
           const navBounds = bounds(nav);
           const copyBounds = bounds(copy);
@@ -429,6 +433,7 @@ test.describe('contact forms', () => {
     await modal.locator('#demo-name').fill('  Test User ');
     await modal.locator('#demo-email').fill('test@example.com');
     await modal.locator('#demo-organisation').fill('Example Rail');
+    await modal.locator('#demo-country').fill('Australia');
     await modal.locator('#demo-message').fill('Please validate our network.');
   };
 
@@ -486,6 +491,8 @@ test.describe('contact forms', () => {
     await modal.locator('#partner-name').fill('Bot');
     await modal.locator('#partner-email').fill('bot@example.com');
     await modal.locator('#partner-organisation').fill('Spam Ltd');
+    await expect(modal.locator('.field label')).toHaveText(['Name', 'Work email', 'Organisation', 'Country', 'Message']);
+    await modal.locator('#partner-country').fill('Nowhere');
     await modal.locator('#partner-message').fill('Buy now');
     await modal.locator('input[name="_honey"]').evaluate((input) => { input.value = 'filled'; });
     await modal.locator('button[type="submit"]').click();
@@ -494,10 +501,35 @@ test.describe('contact forms', () => {
     expect(requests).toBe(0);
   });
 
+  test('sends a general message from the Contact us form without an organisation', async ({ page }) => {
+    let payload;
+    await page.route('https://formsubmit.co/ajax/**', async (route) => {
+      payload = route.request().postDataJSON();
+      await route.fulfill({ json: { success: 'true', message: 'The form was submitted successfully.' } });
+    });
+    await page.goto('/careers.html');
+    const modal = page.locator('#modal-contact');
+    await page.locator('.site-footer [data-modal="contact"]').click();
+    await expect(modal.locator('form [required]')).toHaveCount(3);
+    await modal.locator('#contact-name').fill('Test User');
+    await modal.locator('#contact-email').fill('test@example.com');
+    await modal.locator('#contact-message').fill('Hello DARA.');
+    await expect(modal.locator('button[type="submit"]')).toHaveText('Send message');
+    await modal.locator('button[type="submit"]').click();
+
+    await expect(modal.locator('.modal-success h2')).toHaveText('Message sent');
+    expect(payload).toMatchObject({ _subject: 'DARA Telecom contact enquiry', email: 'test@example.com' });
+  });
+
   test('opens the matching form on the page the visitor is on', async ({ page }) => {
     await page.goto('/solutions.html');
     await page.locator('.nav-actions .btn-brand').click();
+    await expect(page.locator('#modal-contact')).toBeVisible();
+    await expect(page.locator('#modal-contact .modal-form h2')).toHaveText('Contact us');
+    await page.locator('#modal-contact [data-close]').first().click();
+    await page.locator('.cta-band [data-modal="demo"]').click();
     await expect(page.locator('#modal-demo')).toBeVisible();
+    await expect(page.locator('#modal-demo .modal-form h2')).toHaveText('Request a demo');
     await expect(page).toHaveURL(/\/solutions\.html$/);
 
     await page.goto('/about_us.html');
@@ -521,7 +553,7 @@ test.describe('contact forms', () => {
     });
     await page.goto('/about_us.html');
     const modal = page.locator('#modal-demo');
-    await page.locator('.nav-actions .btn-brand').click();
+    await page.locator('.cta-band [data-modal="demo"]').click();
     await fillDemoForm(modal);
     await modal.locator('button[type="submit"]').click();
 
