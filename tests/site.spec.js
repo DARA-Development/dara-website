@@ -261,7 +261,7 @@ test.describe('about page', () => {
     await expect(page.locator('.primary-nav .nav-link').nth(3)).toHaveAttribute('href', 'story.html');
     await expect(page.locator('.site-footer')).toBeVisible();
     await expect(page.locator('.about-intro')).toHaveText(
-      'DARA uses drone-led analytics to reveal coverage gaps and prepare networks for Boundless Connectivity.'
+      'Dara — short for Drone Assisted Radio Analytics — takes mobile network measurements beyond traditional 2D drive testing, to a full 3D view across space, air, ground, and sea.'
     );
     await expect(page.locator('.about-tagline')).toHaveCount(0);
 
