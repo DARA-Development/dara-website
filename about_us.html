@@ -106,20 +106,41 @@
       <div class="about-team-heading">
         <p class="about-eyebrow mono">THE PEOPLE BEHIND DARA</p>
         <h2 id="about-team-title">Built by people who think ahead.</h2>
-        <p>Meet the team working to make telecom ready for what’s next.</p>
+        <p>Meet the team working to make telecom measurements ready for what’s next.</p>
       </div>
+      <div class="about-team-backdrop" hidden></div>
       <div class="about-team-grid">
-        <article class="about-team-member">
-          <div class="about-team-headshot" aria-label="Headshot placeholder for Mo Nadder"><span class="about-team-initials" aria-hidden="true">MN</span><span class="about-team-headshot-label mono">ADD HEADSHOT</span></div>
-          <div class="about-team-details"><span class="about-team-index mono">01</span><h3>Mo Nadder</h3><p>CTO</p></div>
+        <article class="about-team-member about-team-member-expandable">
+          <button class="about-team-toggle" type="button" aria-expanded="false" aria-controls="mo-nadder-bio" aria-label="Mo Nadder, PhD, MBA, CTO profile">
+            <div class="about-team-headshot about-team-headshot-with-photo" aria-label="Headshot of Mo Nadder"><img class="about-team-photo" src="images/mo-nadder-headshot.png" alt="Mo Nadder" loading="lazy"></div>
+            <div class="about-team-details"><span class="about-team-index mono">01</span><h3 id="mo-nadder-name">Mo Nadder, PhD, MBA</h3><p>CTO</p></div>
+          </button>
+          <div class="about-team-bio" id="mo-nadder-bio" hidden>
+            <button class="about-team-bio-close" type="button">Close profile</button>
+            <p>Dr Mo Nadder is CTO and Co-Founder of Dara Telecom; based in Melbourne Australia.</p>
+            <p>With more than 20 years of experience across telecommunications operators and technology companies, Mo brings deep expertise in mobile network strategy, RAN performance, RF engineering, 4G/5G networks, spectrum, MIMO, antennas and network optimisation. He previously held senior network strategy and capacity-planning roles with Etisalat and technology leadership positions with CommScope and Andrew.</p>
+            <p>At Dara telecom, Mo leads the company's technology vision and product development, combining advanced wireless-network expertise with drone-based data collection and analytics to make mobile and satellite network performance testing faster, more scalable and more insightful.</p>
+          </div>
         </article>
-        <article class="about-team-member">
-          <div class="about-team-headshot" aria-label="Headshot placeholder for Ahmed Hamdy"><span class="about-team-initials" aria-hidden="true">AH</span><span class="about-team-headshot-label mono">ADD HEADSHOT</span></div>
-          <div class="about-team-details"><span class="about-team-index mono">02</span><h3>Ahmed Hamdy</h3><p>CIO</p></div>
+        <article class="about-team-member about-team-member-expandable">
+          <button class="about-team-toggle" type="button" aria-expanded="false" aria-controls="ahmed-hamdy-bio" aria-label="Ahmed Hamdy, CIO profile">
+            <div class="about-team-headshot about-team-headshot-with-photo" aria-label="Headshot of Ahmed Hamdy"><img class="about-team-photo" src="images/ahmed-hamdy-headshot.png" alt="Ahmed Hamdy" loading="lazy"></div>
+            <div class="about-team-details"><span class="about-team-index mono">02</span><h3>Ahmed Hamdy</h3><p>CIO</p></div>
+          </button>
+          <div class="about-team-bio" id="ahmed-hamdy-bio" hidden>
+            <button class="about-team-bio-close" type="button">Close profile</button>
+            <p>Ahmed Hamdy is the CIO and Co-Founder of Dara Telecom; based in Athlone, Ireland</p>
+          </div>
         </article>
-        <article class="about-team-member">
-          <div class="about-team-headshot" aria-label="Headshot placeholder for Mo Abdelaziz"><span class="about-team-initials" aria-hidden="true">MA</span><span class="about-team-headshot-label mono">ADD HEADSHOT</span></div>
-          <div class="about-team-details"><span class="about-team-index mono">03</span><h3>Mo Abdelaziz</h3><p>CIO</p></div>
+        <article class="about-team-member about-team-member-expandable">
+          <button class="about-team-toggle" type="button" aria-expanded="false" aria-controls="mo-abdelaziz-bio" aria-label="Mo Abdelaziz, COO profile">
+            <div class="about-team-headshot about-team-headshot-with-photo" aria-label="Headshot of Mo Abdelaziz"><img class="about-team-photo" src="images/mo-abdelaziz-headshot.png" alt="Mo Abdelaziz" loading="lazy"></div>
+            <div class="about-team-details"><span class="about-team-index mono">03</span><h3>Mo Abdelaziz</h3><p>COO</p></div>
+          </button>
+          <div class="about-team-bio" id="mo-abdelaziz-bio" hidden>
+            <button class="about-team-bio-close" type="button">Close profile</button>
+            <p>Mo Abdelaziz is the COO and Co-Founder of Dara Telecom; based in Vancouver, Canada</p>
+          </div>
         </article>
       </div>
     </div>
@@ -180,6 +201,62 @@
     var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
     root.setAttribute('data-theme', next);
     try { localStorage.setItem('dara-theme', next); } catch (e) {}
+  });
+  document.querySelectorAll('.about-team-toggle').forEach(function(toggle) {
+    var card = toggle.closest('.about-team-member');
+    var biography = document.getElementById(toggle.getAttribute('aria-controls'));
+    var backdrop = document.querySelector('.about-team-backdrop');
+    var closeButton = biography.querySelector('.about-team-bio-close');
+    var previousBodyOverflow = '';
+
+    function closeProfile() {
+      if (toggle.getAttribute('aria-expanded') !== 'true') return;
+      toggle.setAttribute('aria-expanded', 'false');
+      biography.hidden = true;
+      backdrop.hidden = true;
+      card.classList.remove('is-expanded');
+      card.removeAttribute('role');
+      card.removeAttribute('aria-modal');
+      document.body.style.overflow = previousBodyOverflow;
+      toggle.focus();
+    }
+
+    toggle.addEventListener('click', function() {
+      if (toggle.getAttribute('aria-expanded') === 'true') {
+        closeProfile();
+        return;
+      }
+
+      previousBodyOverflow = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      card.classList.add('is-expanded');
+      card.setAttribute('role', 'dialog');
+      card.setAttribute('aria-modal', 'true');
+      toggle.setAttribute('aria-expanded', 'true');
+      biography.hidden = false;
+      backdrop.hidden = false;
+      closeButton.focus();
+    });
+
+    closeButton.addEventListener('click', closeProfile);
+    backdrop.addEventListener('click', closeProfile);
+    document.addEventListener('keydown', function(event) {
+      if (toggle.getAttribute('aria-expanded') !== 'true') return;
+      if (event.key === 'Escape') {
+        closeProfile();
+      } else if (event.key === 'Tab') {
+        var focusable = [toggle, closeButton];
+        var first = focusable[0];
+        var last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    });
   });
 
 </script>

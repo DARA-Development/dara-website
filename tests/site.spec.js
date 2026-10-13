@@ -140,13 +140,13 @@ test.describe('homepage', () => {
     }
   });
 
-  test('searches only existing site sections across both pages', async ({ page }) => {
+  test('finds expanded team profiles in site search', async ({ page }) => {
     const search = page.locator('.site-search');
     await search.locator('input').fill('founder');
     await search.locator('input').press('Enter');
 
-    await expect(search.locator('.site-search-results a', { hasText: 'Built by people' })).toHaveCount(0);
-    await expect(search.locator('.site-search-message')).toContainText('No results found');
+    const teamResult = search.locator('.site-search-results a', { hasText: 'Built by people' });
+    await expect(teamResult).toHaveAttribute('href', /about_us\.html#team$/);
   });
 
   test('shows feedback when search has no matches', async ({ page }) => {
@@ -271,24 +271,175 @@ test.describe('about page', () => {
     await expect(search.locator('.site-search-results a', { hasText: 'Building readiness for what’s next in telecom.' })).toBeVisible();
 
   });
+
+  test('zooms the three purpose cards and three team profiles on hover', async ({ page }) => {
+    await page.goto('/about_us.html');
+    await page.setViewportSize({ width: 1365, height: 900 });
+
+    for (const selector of ['.about-purpose-card', '.about-team-member']) {
+      const cards = page.locator(selector);
+      await expect(cards).toHaveCount(3);
+
+      const card = cards.first();
+      await card.scrollIntoViewIfNeeded();
+      await expect(card).not.toHaveCSS('transform', /matrix\(1\.1,/);
+      await card.hover();
+      await expect(card).toHaveCSS('transform', /matrix\(1\.1,/);
+    }
+  });
 });
 
 test.describe('team section', () => {
+  test('expands Mo Nadder’s card to show his biography and collapses it again', async ({ page }) => {
+    await page.goto('/about_us.html#team');
+
+    const toggle = page.locator('.about-team-toggle[aria-controls="mo-nadder-bio"]');
+    const biography = page.locator('#mo-nadder-bio');
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await expect(biography).toBeHidden();
+
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    await expect(biography).toBeVisible();
+    await expect(page.locator('.about-team-member').first()).toHaveAttribute('role', 'dialog');
+    await expect(page.locator('.about-team-member').first()).toHaveAttribute('aria-modal', 'true');
+    await expect(biography).toHaveCSS('font-size', '18.5px');
+    await expect(biography.locator('.about-team-bio-close')).toHaveCSS('font-size', '14px');
+    await expect(page.locator('.about-team-member').first().locator('.about-team-details h3')).toHaveCSS('font-size', '16px');
+    await expect(page.locator('.about-team-member').first().locator('.about-team-details > p')).toHaveCSS('font-size', '14px');
+    await expect.poll(() => page.locator('.about-team-member').first().evaluate((card) => {
+      const { x, y, width, height } = card.getBoundingClientRect();
+      return Math.abs(x + width / 2 - window.innerWidth / 2) < 1 &&
+        Math.abs(y + height / 2 - window.innerHeight / 2) < 1;
+    })).toBe(true);
+    await expect(page.locator('.about-team-member').nth(1)).not.toHaveClass(/is-expanded/);
+    await expect(page.locator('.about-team-member').nth(2)).not.toHaveClass(/is-expanded/);
+    await expect(page.locator('body')).toHaveCSS('overflow', 'hidden');
+    await expect(biography.locator('p')).toHaveText([
+      'Dr Mo Nadder is CTO and Co-Founder of Dara Telecom; based in Melbourne Australia.',
+      'With more than 20 years of experience across telecommunications operators and technology companies, Mo brings deep expertise in mobile network strategy, RAN performance, RF engineering, 4G/5G networks, spectrum, MIMO, antennas and network optimisation. He previously held senior network strategy and capacity-planning roles with Etisalat and technology leadership positions with CommScope and Andrew.',
+      "At Dara telecom, Mo leads the company's technology vision and product development, combining advanced wireless-network expertise with drone-based data collection and analytics to make mobile and satellite network performance testing faster, more scalable and more insightful."
+    ]);
+
+    await toggle.click();
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await expect(biography).toBeHidden();
+    await expect(page.locator('.about-team-member').first()).not.toHaveAttribute('role', 'dialog');
+    await expect(page.locator('body')).not.toHaveCSS('overflow', 'hidden');
+  });
+
+  test('closes the expanded Mo Nadder card when clicking outside it', async ({ page }) => {
+    await page.goto('/about_us.html#team');
+
+    const toggle = page.locator('.about-team-toggle[aria-controls="mo-nadder-bio"]');
+    await toggle.click();
+    await expect(page.locator('#mo-nadder-bio')).toBeVisible();
+    await page.locator('.about-team-backdrop').click({ position: { x: 10, y: 10 } });
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await expect(page.locator('#mo-nadder-bio')).toBeHidden();
+    await expect(page.locator('.about-team-member').first()).not.toHaveClass(/is-expanded/);
+    await expect(toggle).toBeFocused();
+  });
+
+  test('expands Ahmed Hamdy’s card with his biography and dismisses it outside the card', async ({ page }) => {
+    await page.goto('/about_us.html#team');
+
+    const toggle = page.locator('.about-team-toggle[aria-controls="ahmed-hamdy-bio"]');
+    const biography = page.locator('#ahmed-hamdy-bio');
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await toggle.click();
+
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    await expect(biography).toBeVisible();
+    await expect(biography.locator('p')).toHaveText(
+      'Ahmed Hamdy is the CIO and Co-Founder of Dara Telecom; based in Athlone, Ireland'
+    );
+    await expect.poll(() => page.locator('.about-team-member').nth(1).evaluate((card) => {
+      const { x, y, width, height } = card.getBoundingClientRect();
+      return Math.abs(x + width / 2 - window.innerWidth / 2) < 1 &&
+        Math.abs(y + height / 2 - window.innerHeight / 2) < 1;
+    })).toBe(true);
+    await expect(page.locator('.about-team-member').first()).not.toHaveClass(/is-expanded/);
+    await expect(page.locator('.about-team-member').nth(2)).not.toHaveClass(/is-expanded/);
+
+    await page.locator('.about-team-backdrop').click({ position: { x: 10, y: 10 } });
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await expect(biography).toBeHidden();
+    await expect(page.locator('.about-team-member').nth(1)).not.toHaveClass(/is-expanded/);
+  });
+
+  test('expands Mo Abdelaziz’s card with his biography and dismisses it outside the card', async ({ page }) => {
+    await page.goto('/about_us.html#team');
+
+    const toggle = page.locator('.about-team-toggle[aria-controls="mo-abdelaziz-bio"]');
+    const biography = page.locator('#mo-abdelaziz-bio');
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await toggle.click();
+
+    await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+    await expect(biography).toBeVisible();
+    await expect(biography.locator('p')).toHaveText(
+      'Mo Abdelaziz is the COO and Co-Founder of Dara Telecom; based in Vancouver, Canada'
+    );
+    await expect.poll(() => page.locator('.about-team-member').nth(2).evaluate((card) => {
+      const { x, y, width, height } = card.getBoundingClientRect();
+      return Math.abs(x + width / 2 - window.innerWidth / 2) < 1 &&
+        Math.abs(y + height / 2 - window.innerHeight / 2) < 1;
+    })).toBe(true);
+    await expect(page.locator('.about-team-member').first()).not.toHaveClass(/is-expanded/);
+    await expect(page.locator('.about-team-member').nth(1)).not.toHaveClass(/is-expanded/);
+
+    await page.locator('.about-team-backdrop').click({ position: { x: 10, y: 10 } });
+    await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+    await expect(biography).toBeHidden();
+    await expect(page.locator('.about-team-member').nth(2)).not.toHaveClass(/is-expanded/);
+  });
+
   test('shows the team profiles and shared footer', async ({ page }) => {
     await page.goto('/about_us.html#team');
 
     await expect(page).toHaveTitle('About us | DARA Telecom');
     await expect(page.locator('#about-team-title')).toHaveText('Built by people who think ahead.');
     await expect(page.locator('.about-team-heading > p:last-child')).toHaveText(
-      'Meet the team working to make telecom ready for what’s next.'
+      'Meet the team working to make telecom measurements ready for what’s next.'
     );
     await expect(page.locator('.about-team-member h3')).toHaveText([
-      'Mo Nadder', 'Ahmed Hamdy', 'Mo Abdelaziz'
+      'Mo Nadder, PhD, MBA', 'Ahmed Hamdy', 'Mo Abdelaziz'
     ]);
-    await expect(page.locator('.about-team-member .about-team-details > p')).toHaveText(['CTO', 'CIO', 'CIO']);
-    await expect(page.locator('.about-team-headshot-label')).toHaveText([
-      'ADD HEADSHOT', 'ADD HEADSHOT', 'ADD HEADSHOT'
-    ]);
+    await expect(page.locator('.about-team-member .about-team-details > p')).toHaveText(['CTO', 'CIO', 'COO']);
+    const moHeadshot = page.locator('.about-team-member').first().locator('.about-team-photo');
+    await expect(moHeadshot).toHaveAttribute('src', 'images/mo-nadder-headshot.png');
+    await expect(moHeadshot).toHaveAttribute('alt', 'Mo Nadder');
+    await expect.poll(() => moHeadshot.evaluate((image) => ({
+      width: image.naturalWidth,
+      height: image.naturalHeight
+    }))).toEqual({ width: 1136, height: 768 });
+    await expect(moHeadshot).toHaveCSS('object-fit', 'cover');
+    expect(await moHeadshot.evaluate((image) => {
+      return image.offsetWidth === image.parentElement.clientWidth &&
+        image.offsetHeight === image.parentElement.clientHeight;
+    })).toBe(true);
+    const ahmedHeadshot = page.locator('.about-team-member').nth(1).locator('.about-team-photo');
+    await expect(ahmedHeadshot).toHaveAttribute('src', 'images/ahmed-hamdy-headshot.png');
+    await expect(ahmedHeadshot).toHaveAttribute('alt', 'Ahmed Hamdy');
+    await expect.poll(() => ahmedHeadshot.evaluate((image) => ({
+      width: image.naturalWidth,
+      height: image.naturalHeight
+    }))).toEqual({ width: 903, height: 563 });
+    await expect(ahmedHeadshot).toHaveCSS('object-fit', 'cover');
+    expect(await ahmedHeadshot.evaluate((image) => {
+      return image.offsetWidth === image.parentElement.clientWidth &&
+        image.offsetHeight === image.parentElement.clientHeight;
+    })).toBe(true);
+    const moAbdelazizHeadshot = page.locator('.about-team-member').nth(2).locator('.about-team-photo');
+    await expect(moAbdelazizHeadshot).toHaveAttribute('src', 'images/mo-abdelaziz-headshot.png');
+    await expect(moAbdelazizHeadshot).toHaveAttribute('alt', 'Mo Abdelaziz');
+    await expect.poll(() => moAbdelazizHeadshot.evaluate((image) => ({
+      width: image.naturalWidth,
+      height: image.naturalHeight
+    }))).toEqual({ width: 398, height: 260 });
+    await expect(moAbdelazizHeadshot).toHaveCSS('object-fit', 'cover');
+    await expect(page.locator('.about-team-headshot-label')).toHaveCount(0);
     await expect(page.locator('.footer-home-links a')).toHaveText([
       'About us', 'Newsroom', 'Careers', 'Contact us'
     ]);
