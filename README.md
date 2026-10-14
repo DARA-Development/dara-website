@@ -27,6 +27,7 @@ It's a static site: plain HTML, CSS and JavaScript, with no framework.
 - `footer.html`: the shared footer. The build copies it into every page, replacing each page's own `<footer>`, so edit the footer here only.
 - `images/`, `videos/`, `fonts/`: media and fonts.
 - `CNAME`: the custom domain.
+- `features.json`: feature flags for pages (see below).
 - `scripts/build.mjs`: builds the site into `dist/`.
 - `tests/site.spec.js`: Playwright tests.
 
@@ -44,6 +45,20 @@ npm test                          # build and run the tests
 Always run the tests with `npm test`. It rebuilds `dist/` first. Running `npx playwright test` on its own tests whatever is already in `dist/`, which may be out of date.
 
 If you change text on a page that the tests check, update the matching test in `tests/site.spec.js` too.
+
+## Feature flags
+
+`features.json` switches pages on and off:
+
+```json
+{
+  "careers": true
+}
+```
+
+Set a flag to `false` and push to hide that page. The build leaves out the page with the same name (`careers.html`) and removes every link marked `data-feature="careers"`, so the page returns 404 and nothing links to it. Set it back to `true` to publish it again.
+
+To put another page behind a flag, add its name to `features.json` and add `data-feature="<name>"` to each link to it (usually just the one in `footer.html`).
 
 ## Deploying
 

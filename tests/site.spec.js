@@ -1,4 +1,8 @@
 import { test, expect } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+
+const features = JSON.parse(readFileSync(new URL('../features.json', import.meta.url), 'utf8'));
+const footerLinkLabels = ['About us', 'Newsroom', ...(features.careers ? ['Careers'] : []), 'Contact us'];
 
 test.describe('homepage', () => {
   test.beforeEach(async ({ page }) => {
@@ -41,9 +45,7 @@ test.describe('homepage', () => {
       'href',
       'https://www.linkedin.com/company/dara-telecom/'
     );
-    await expect(footer.locator('.footer-home-links a')).toHaveText([
-      'About us', 'Newsroom', 'Careers', 'Contact us'
-    ]);
+    await expect(footer.locator('.footer-home-links a')).toHaveText(footerLinkLabels);
     await expect(footer.locator('.footer-home-links a').first()).toHaveAttribute('href', 'about_us.html#page-top');
     await expect(footer.locator('.footer-home-legal a')).toHaveText(['Privacy Policy', 'Terms of Use']);
   });
@@ -90,9 +92,7 @@ test.describe('homepage', () => {
       ]);
       await expect(page.locator('.primary-nav .nav-link[aria-current="page"]')).toHaveText(activeLabel);
       await expect(page.locator('.primary-nav .nav-link', { hasText: /^Home$/ })).toHaveCount(0);
-      await expect(page.locator('.site-footer .footer-home-links a')).toHaveText([
-        'About us', 'Newsroom', 'Careers', 'Contact us'
-      ]);
+      await expect(page.locator('.site-footer .footer-home-links a')).toHaveText(footerLinkLabels);
     }
   });
 
@@ -441,9 +441,7 @@ test.describe('team section', () => {
     }))).toEqual({ width: 398, height: 260 });
     await expect(moAbdelazizHeadshot).toHaveCSS('object-fit', 'cover');
     await expect(page.locator('.about-team-headshot-label')).toHaveCount(0);
-    await expect(page.locator('.footer-home-links a')).toHaveText([
-      'About us', 'Newsroom', 'Careers', 'Contact us'
-    ]);
+    await expect(page.locator('.footer-home-links a')).toHaveText(footerLinkLabels);
     await expect(page.locator('.footer-home-links a', { hasText: /^Meet the team$/ })).toHaveCount(0);
     await expect(page.locator('.footer-home-links a', { hasText: /^Investors Relations$/ })).toHaveCount(0);
 
@@ -475,7 +473,7 @@ test('keeps the shared pages free of horizontal overflow at responsive widths', 
     '/products.html',
     '/about_us.html',
     '/newsroom.html',
-    '/careers.html',
+    ...(features.careers ? ['/careers.html'] : []),
     '/story.html',
     '/privacy.html',
     '/terms.html'
@@ -494,7 +492,7 @@ test('keeps the shared pages free of horizontal overflow at responsive widths', 
       ).toBe(0);
 
       const footerLinks = page.locator('.footer-home-links a');
-      await expect(footerLinks).toHaveCount(4);
+      await expect(footerLinks).toHaveCount(footerLinkLabels.length);
       const footerLayout = await footerLinks.evaluateAll((links) => ({
         fontSizes: links.map((link) => parseFloat(getComputedStyle(link).fontSize)),
         bounds: links.map((link) => {
@@ -659,7 +657,7 @@ test.describe('contact forms', () => {
       payload = route.request().postDataJSON();
       await route.fulfill({ json: { success: 'true', message: 'The form was submitted successfully.' } });
     });
-    await page.goto('/careers.html');
+    await page.goto('/newsroom.html');
     const modal = page.locator('#modal-contact');
     await page.locator('.site-footer [data-modal="contact"]').click();
     await expect(modal.locator('form [required]')).toHaveCount(3);
@@ -713,4 +711,12 @@ test.describe('contact forms', () => {
     expect(payload).toMatchObject({ _subject: 'DARA Telecom demo request', email: 'test@example.com' });
     await expect(page).toHaveURL(/\/about_us\.html$/);
   });
+});
+
+test('publishes the Careers page and its footer link only when the careers feature is on', async ({ page }) => {
+  const response = await page.goto('/careers.html');
+  expect(response.status()).toBe(features.careers ? 200 : 404);
+
+  await page.goto('/');
+  await expect(page.locator('.site-footer a[href="careers.html"]')).toHaveCount(features.careers ? 1 : 0);
 });
