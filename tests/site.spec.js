@@ -357,7 +357,7 @@ test.describe('team section', () => {
     await expect(toggle).toHaveAttribute('aria-expanded', 'true');
     await expect(biography).toBeVisible();
     await expect(biography.locator('p')).toHaveText([
-      'Ahmed Hamdy is the Chief Delivery Officer (Part-Time) and Co-Founder of Dara Telecom; based in Athlone, Ireland.',
+      'Ahmed Hamdy is the Chief Delivery Officer and Co-Founder of Dara Telecom; based in Athlone, Ireland.',
       'With over 20 years of experience spanning the full software delivery lifecycle — from customer-facing operations and support through testing, development and Agile delivery leadership — Ahmed started his career on the operations and support side of Telecommunication Management Networks. He progressively shifted left across the SDLC into software development and, ultimately, Agile delivery leadership, giving him an end-to-end view of how IT and telecommunication systems are built, run, delivered and supported in production.'
     ]);
     await expect.poll(() => page.locator('.about-team-member').nth(1).evaluate((card) => {
@@ -412,7 +412,7 @@ test.describe('team section', () => {
     await expect(page.locator('.about-team-member h3')).toHaveText([
       'Mo Nadder, PhD, MBA', 'Ahmed Hamdy', 'Mo Abdelaziz'
     ]);
-    await expect(page.locator('.about-team-member .about-team-details > p')).toHaveText(['CTO', 'Chief Delivery Officer (Part-Time)', 'COO']);
+    await expect(page.locator('.about-team-member .about-team-details > p')).toHaveText(['CTO', 'Chief Delivery Officer', 'COO']);
     const moHeadshot = page.locator('.about-team-member').first().locator('.about-team-photo');
     await expect(moHeadshot).toHaveAttribute('src', 'images/mo-nadder-headshot.png');
     await expect(moHeadshot).toHaveAttribute('alt', 'Mo Nadder');
