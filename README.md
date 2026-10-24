@@ -38,7 +38,7 @@ You need [Node.js](https://nodejs.org) 22 or later.
 ```sh
 npm install                       # first time only
 npx playwright install chromium   # first time only, for the tests
-npm start                         # build and open the site with live reload
+npm start                         # build and serve the site at http://127.0.0.1:8080
 npm test                          # build and run the tests
 ```
 

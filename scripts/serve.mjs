@@ -8,10 +8,14 @@ const port = Number(process.argv[3] || 4174);
 const contentTypes = {
   '.css': 'text/css',
   '.html': 'text/html',
+  '.jpeg': 'image/jpeg',
+  '.jpg': 'image/jpeg',
+  '.js': 'text/javascript',
   '.mp4': 'video/mp4',
   '.png': 'image/png',
   '.svg': 'image/svg+xml',
   '.ttf': 'font/ttf',
+  '.webp': 'image/webp',
 };
 
 const server = createServer(async (request, response) => {
@@ -38,5 +42,5 @@ const server = createServer(async (request, response) => {
 });
 
 server.listen(port, '127.0.0.1', () => {
-  console.log(`DARA test server listening on http://127.0.0.1:${port}`);
+  console.log(`DARA site server listening on http://127.0.0.1:${port}`);
 });
