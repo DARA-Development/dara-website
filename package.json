@@ -4,7 +4,7 @@
   "description": "Website for DARA\r Under Construction\r Test if it will deploy",
   "scripts": {
     "build": "node scripts/build.mjs",
-    "start": "npm run build && node scripts/serve.mjs dist 8080",
+    "start": "npm run build && node scripts/serve.mjs dist 8080 --watch",
     "test": "npm run build && playwright test",
     "test:headed": "playwright test --headed"
   },
