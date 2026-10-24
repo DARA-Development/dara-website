@@ -4,6 +4,11 @@ import { readFileSync } from 'node:fs';
 const features = JSON.parse(readFileSync(new URL('../features.json', import.meta.url), 'utf8'));
 const footerLinkLabels = ['About us', 'Newsroom', ...(features.careers ? ['Careers'] : []), 'Contact us'];
 
+// Keep test runs out of the live Umami analytics.
+test.beforeEach(async ({ context }) => {
+  await context.route(/^https:\/\/(cloud|gateway)\.umami\.is\//, (route) => route.abort());
+});
+
 test.describe('homepage', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/');
