@@ -358,7 +358,7 @@ test.describe('team section', () => {
     await expect(biography).toBeVisible();
     await expect(biography.locator('p')).toHaveText([
       'Ahmed Hamdy is Chief Delivery Officer and Co-Founder of Dara Telecom; based in Athlone, Ireland.',
-      'With more than 20 years of experience across telecommunications operators and technology vendors, Ahmed brings deep expertise in Agile delivery, software development, cloud, DevOps, observability and AI-augmented delivery. Having shifted left from operations and support into development and delivery leadership, he held senior Scrum Master, Agile coaching and team leadership roles with Ericsson, and operations roles with Etisalat and Telecom Egypt.',
+      'With more than 20 years of experience across telecommunications operators and technology vendors, Ahmed brings deep expertise in Telecommunication Management Networks, Agile delivery, software development, cloud, DevOps, observability and AI-augmented delivery. Having shifted left from operations and support into development and delivery leadership, he held senior Scrum Master, Agile coaching and team leadership roles with Ericsson, Etisalat and Telecom Egypt.',
       'At Dara Telecom, Ahmed leads the development and delivery of the company’s software, from the customer portal to its O-RAN rApps, combining Agile, AI-augmented delivery with deep telecom experience to turn drone-collected network data into reliable, production-ready solutions with the best possible customer experience.'
     ]);
     await expect.poll(() => page.locator('.about-team-member').nth(1).evaluate((card) => {
