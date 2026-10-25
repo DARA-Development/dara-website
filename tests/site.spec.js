@@ -323,7 +323,7 @@ test.describe('team section', () => {
     await expect(biography.locator('p')).toHaveText([
       'Dr Mo Nadder is CTO and Co-Founder of Dara Telecom; based in Melbourne Australia.',
       'With more than 20 years of experience across telecommunications operators and technology companies, Mo brings deep expertise in mobile network strategy, RAN performance, RF engineering, 4G/5G networks, spectrum, MIMO, antennas and network optimisation. He previously held senior network strategy and capacity-planning roles with Etisalat and technology leadership positions with CommScope and Andrew.',
-      "At Dara telecom, Mo leads the company's technology vision and product development, combining advanced wireless-network expertise with drone-based data collection and analytics to make mobile and satellite network performance testing faster, more scalable and more insightful."
+      "At Dara Telecom, Mo leads the company's technology vision and product development, combining advanced wireless-network expertise with drone-based data collection and analytics to make mobile and satellite network performance testing faster, more scalable and more insightful."
     ]);
 
     await toggle.click();
@@ -357,8 +357,9 @@ test.describe('team section', () => {
     await expect(toggle).toHaveAttribute('aria-expanded', 'true');
     await expect(biography).toBeVisible();
     await expect(biography.locator('p')).toHaveText([
-      'Ahmed Hamdy is the Chief Delivery Officer and Co-Founder of Dara Telecom; based in Athlone, Ireland.',
-      'With over 20 years of experience spanning the full software delivery lifecycle — from customer-facing operations and support through testing, development and Agile delivery leadership — Ahmed started his career on the operations and support side of Telecommunication Management Networks. He progressively shifted left across the SDLC into software development and, ultimately, Agile delivery leadership, giving him an end-to-end view of how IT and telecommunication systems are built, run, delivered and supported in production.'
+      'Ahmed Hamdy is Chief Delivery Officer and Co-Founder of Dara Telecom; based in Athlone, Ireland.',
+      'With more than 20 years of experience across telecommunications operators and technology vendors, Ahmed brings deep expertise in Agile delivery, software development, cloud, DevOps, observability and AI-augmented delivery. Having shifted left from operations and support into development and delivery leadership, he held senior Scrum Master, Agile coaching and team leadership roles with Ericsson, and operations roles with Etisalat and Telecom Egypt.',
+      'At Dara Telecom, Ahmed leads the development and delivery of the company’s software, from the customer portal to its O-RAN rApps, combining Agile, AI-augmented delivery with deep telecom experience to turn drone-collected network data into reliable, production-ready solutions with the best possible customer experience.'
     ]);
     await expect.poll(() => page.locator('.about-team-member').nth(1).evaluate((card) => {
       const { x, y, width, height } = card.getBoundingClientRect();
